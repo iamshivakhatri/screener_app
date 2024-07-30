@@ -45,9 +45,14 @@ def screen():
     screened_stocks.sort(key=lambda x: x['rel_volume'], reverse=True)
     return jsonify(screened_stocks[:10])
 
+# Use finnhub API to get all stock tickers
 def get_tickers():
-    # Placeholder: replace with actual logic to fetch tickers
-    return ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
+    api_key = 'YOUR_FINNHUB_API_KEY'
+    url = f'https://finnhub.io/api/v1/stock/symbol?exchange=US&token={api_key}'
+    response = requests.get(url)
+    data = response.json()
+    tickers = [item['symbol'] for item in data if 'symbol' in item]
+    return tickers
 
 def get_news(ticker):
     # Placeholder: replace with actual logic to fetch news
