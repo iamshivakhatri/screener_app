@@ -31,4 +31,8 @@ with open("dataset/trending_tickers.json", "r") as f:
 
 ticker_list = data["body"]
 
-print(ticker_list)
+df = pd.DataFrame(ticker_list)
+
+df.columns = ['Stock']
+# df.to_csv('data/trending.csv', index=False)
+print(df)

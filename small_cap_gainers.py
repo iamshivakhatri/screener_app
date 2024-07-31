@@ -21,7 +21,7 @@ load_dotenv()
 # with open("small_cap_gainers.json", "w") as f:
 #     f.write(json.dumps(response.json(), indent=2))
 
-with open("small_cap_gainers.json", "r") as f:
+with open("dataset/small_cap_gainers.json", "r") as f:
     data = json.load(f)
 
 df_small_cap_gainers = pd.DataFrame(data["body"])
@@ -41,4 +41,5 @@ df_price_data = df_price_data[(df_price_data['regularMarketPrice'] < 20) & (df_p
 df_price_data.sort_values(by='regularMarketChangePercent', ascending=False, inplace=True)
 df_price_data.columns = ['symbol', 'Price', 'Previous Close',
                          'High', 'Low', 'Percent Change']
+df_price_data.to_csv('data/small_cap_gainers.csv', index=False)
 print(df_price_data)

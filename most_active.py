@@ -36,4 +36,5 @@ df_most_actives = pd.DataFrame(data["body"])
 price_related_columns = ['symbol', 'regularMarketPrice', 'regularMarketPreviousClose',
                          'regularMarketDayHigh', 'regularMarketDayLow', 'regularMarketChangePercent']
 df_price_data = df_most_actives[price_related_columns]
+df_price_data.to_csv("data/most_actives.csv", index=False)
 print(df_price_data)
