@@ -68,7 +68,8 @@ df = pd.concat([(df.drop(columns =["most_actives"])), new_df], axis=1)
 tickers = df['symbol'].tolist()
 print(tickers)
 stocks = screen_by_price_percentage_increase(tickers)
+print(stocks)
 df_price = pd.DataFrame(stocks, columns=["symbol", "current_price", "price_percentage_change"])
-print(df_price)
+# print(df_price)
 
 

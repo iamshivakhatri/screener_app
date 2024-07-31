@@ -1,0 +1,36 @@
+1 list containing series can be changed to df like this: 
+# List of tuples
+stocks = [
+    ('AAPL', 150.00, 1.23),
+    ('GOOGL', 2750.00, -0.45),
+    ('MSFT', 299.00, 2.34)
+]
+
+# Create DataFrame
+df_price = pd.DataFrame(stocks, columns=["symbol", "current_price", "price_percentage_change"])
+
+
+2 # List containing json object can be changed to df like this. 
+# Example DataFrame with nested data
+df = pd.DataFrame({
+    'most_actives': [
+        {'symbol': 'NVDA', 'trade_count': 3511922, 'volume': 1500000},
+        {'symbol': 'SQQQ', 'trade_count': 159987, 'volume': 300000},
+        {'symbol': 'ATPC', 'trade_count': 197749, 'volume': 500000}
+    ]
+})
+
+# Expand 'most_actives' column
+new_df = df['most_actives'].apply(pd.Series)
+
+3. If it has a list containing json object then we can just use pd.DataFrame(data)
+
+ [{'change': 0.0499, 'percent_change': 19.96, 'price': 0.2999, 'symbol': 'AMBI.WS'}, \
+ {'change': 0.0499, 'percent_change': 19.95, 'price': 0.3, 'symbol': 'NXPLW'}, 
+ {'change': 0.1695, 'percent_change': 19.7, 'price': 1.03, 'symbol': 'INVO'},
+  {'change': 0.0896, 'percent_change': 19.05, 'price': 0.56, 'symbol': 'BFI'}]
+
+  just df = pd.DataFrame(data)
+
+  if tuples then df = pd.DataFrame(data, columns = [])
+  
