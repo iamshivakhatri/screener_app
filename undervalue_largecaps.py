@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 # # Define the URL and parameters for the API request
 # url = "https://yahoo-finance15.p.rapidapi.com/api/v1/markets/screener"
-# querystring = {"list": "trending"}
+# querystring = {"list": "undervalued_large_caps"}
 
 # headers = {
 #     "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
@@ -22,13 +22,18 @@ from dotenv import load_dotenv
 # print(json.dumps(response.json(), indent=2))
 
 # # Save the response data to a file
-# with open("trending_tickers.json", "w") as f:
+# with open("undervalued_large_caps.json", "w") as f:
 #     f.write(json.dumps(response.json(), indent=2))
 
 # Load the response data from the file
-with open("dataset/trending_tickers.json", "r") as f:
+with open("undervalued_large_caps.json", "r") as f:
     data = json.load(f)
 
-ticker_list = data["body"]
+# Convert to DataFrame
+df_undervalued_large_caps = pd.DataFrame(data["body"])
 
-print(ticker_list)
+# Select only the columns related to price
+price_related_columns = ['symbol', 'regularMarketPrice', 'regularMarketPreviousClose',
+                         'regularMarketDayHigh', 'regularMarketDayLow', 'regularMarketChangePercent']
+df_price_data = df_undervalued_large_caps[price_related_columns]
+print(df_price_data)
