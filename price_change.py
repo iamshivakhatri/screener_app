@@ -25,7 +25,7 @@ load_dotenv()
 #     f.write(json.dumps(response.json(), indent=2))
 
 
-with open("price_data.json", "r") as f:
+with open("dataset/price_data.json", "r") as f:
     data = json.load(f)
 
 

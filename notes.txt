@@ -33,4 +33,8 @@ new_df = df['most_actives'].apply(pd.Series)
   just df = pd.DataFrame(data)
 
   if tuples then df = pd.DataFrame(data, columns = [])
+
+  Useful columns: 
+  marketchangepercent
+  
   
