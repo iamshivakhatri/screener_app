@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import yfinance as yf
 import pandas as pd
+from alpha_vantage.timeseries import TimeSeries
 
 app = Flask(__name__)
 
@@ -57,6 +58,23 @@ def get_tickers():
 def get_news(ticker):
     # Placeholder: replace with actual logic to fetch news
     return f"News for {ticker}"
+
+def get_all_tickers(api_key):
+    # Define the Alpha Vantage endpoint for the symbol search
+    url = f"https://www.alphavantage.co/query?function=LISTING_STATUS&apikey={api_key}"
+    
+    # Make the request to the API
+    response = requests.get(url)
+    
+    # Check if the request was successful
+    if response.status_code != 200:
+        raise Exception("Error fetching data from Alpha Vantage API")
+    
+    # Parse the response content
+    tickers = response.text.split('\n')
+    ticker_list = [line.split(',')[0] for line in tickers[1:] if line]  # Skip header and empty lines
+    
+    return ticker_list 
 
 if __name__ == '__main__':
     app.run(debug=True)
