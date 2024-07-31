@@ -1,0 +1,608 @@
+{
+  "gainers": [
+    {
+      "change": 0.0028,
+      "percent_change": 215.38,
+      "price": 0.0041,
+      "symbol": "VWEWW"
+    },
+    {
+      "change": 2.13,
+      "percent_change": 178.99,
+      "price": 3.32,
+      "symbol": "IMNN"
+    },
+    {
+      "change": 0.0168,
+      "percent_change": 118.31,
+      "price": 0.031,
+      "symbol": "ISPOW"
+    },
+    {
+      "change": 0.0195,
+      "percent_change": 102.09,
+      "price": 0.0386,
+      "symbol": "ECDAW"
+    },
+    {
+      "change": 0.0134,
+      "percent_change": 61.47,
+      "price": 0.0352,
+      "symbol": "CETUW"
+    },
+    {
+      "change": 0.0475,
+      "percent_change": 54.29,
+      "price": 0.135,
+      "symbol": "ATPC"
+    },
+    {
+      "change": 0.0167,
+      "percent_change": 50.15,
+      "price": 0.05,
+      "symbol": "SABSW"
+    },
+    {
+      "change": 0.0097,
+      "percent_change": 48.02,
+      "price": 0.0299,
+      "symbol": "CMAXW"
+    },
+    {
+      "change": 2.48,
+      "percent_change": 47.33,
+      "price": 7.72,
+      "symbol": "ISPO"
+    },
+    {
+      "change": 0.0056,
+      "percent_change": 44.09,
+      "price": 0.0183,
+      "symbol": "CELUW"
+    },
+    {
+      "change": 0.0225,
+      "percent_change": 40.69,
+      "price": 0.0778,
+      "symbol": "SAITW"
+    },
+    {
+      "change": 0.73,
+      "percent_change": 37.63,
+      "price": 2.67,
+      "symbol": "LUMN"
+    },
+    {
+      "change": 0.0106,
+      "percent_change": 35.33,
+      "price": 0.0406,
+      "symbol": "ABLVW"
+    },
+    {
+      "change": 0.58,
+      "percent_change": 34.12,
+      "price": 2.28,
+      "symbol": "PCSA"
+    },
+    {
+      "change": 0.0125,
+      "percent_change": 33.78,
+      "price": 0.0495,
+      "symbol": "NIVFW"
+    },
+    {
+      "change": 0.0121,
+      "percent_change": 32.7,
+      "price": 0.0491,
+      "symbol": "SATLW"
+    },
+    {
+      "change": 0.0067,
+      "percent_change": 30.45,
+      "price": 0.0287,
+      "symbol": "MSAIW"
+    },
+    {
+      "change": 0.0147,
+      "percent_change": 29.46,
+      "price": 0.0646,
+      "symbol": "PETWW"
+    },
+    {
+      "change": 0.0122,
+      "percent_change": 28.37,
+      "price": 0.0552,
+      "symbol": "BFIIW"
+    },
+    {
+      "change": 0.31,
+      "percent_change": 26.96,
+      "price": 1.46,
+      "symbol": "ONMD"
+    },
+    {
+      "change": 0.0035,
+      "percent_change": 26.52,
+      "price": 0.0167,
+      "symbol": "HOFVW"
+    },
+    {
+      "change": 0.0103,
+      "percent_change": 26.01,
+      "price": 0.0499,
+      "symbol": "PIIIW"
+    },
+    {
+      "change": 0.0514,
+      "percent_change": 25.88,
+      "price": 0.25,
+      "symbol": "NOVVR"
+    },
+    {
+      "change": 0.0183,
+      "percent_change": 25.56,
+      "price": 0.0899,
+      "symbol": "STSSW"
+    },
+    {
+      "change": 7,
+      "percent_change": 25,
+      "price": 35,
+      "symbol": "VHAI.WSB"
+    },
+    {
+      "change": 0.01,
+      "percent_change": 25,
+      "price": 0.05,
+      "symbol": "PRLHW"
+    },
+    {
+      "change": 0.0175,
+      "percent_change": 25,
+      "price": 0.0875,
+      "symbol": "AENTW"
+    },
+    {
+      "change": 0.0398,
+      "percent_change": 24.88,
+      "price": 0.1998,
+      "symbol": "RVPHW"
+    },
+    {
+      "change": 0.205,
+      "percent_change": 24.7,
+      "price": 1.035,
+      "symbol": "AILEW"
+    },
+    {
+      "change": 0.0257,
+      "percent_change": 24.64,
+      "price": 0.13,
+      "symbol": "MACAW"
+    },
+    {
+      "change": 0.16,
+      "percent_change": 24.62,
+      "price": 0.81,
+      "symbol": "LZM.WS"
+    },
+    {
+      "change": 2.67,
+      "percent_change": 24.03,
+      "price": 13.78,
+      "symbol": "DBGIW"
+    },
+    {
+      "change": 0.1615,
+      "percent_change": 24.01,
+      "price": 0.8341,
+      "symbol": "BNOX"
+    },
+    {
+      "change": 0.0397,
+      "percent_change": 23.97,
+      "price": 0.2053,
+      "symbol": "HYAC.WS"
+    },
+    {
+      "change": 0.99,
+      "percent_change": 23.86,
+      "price": 5.14,
+      "symbol": "CALC"
+    },
+    {
+      "change": 0.0249,
+      "percent_change": 23.71,
+      "price": 0.1299,
+      "symbol": "NETDW"
+    },
+    {
+      "change": 0.0151,
+      "percent_change": 23.63,
+      "price": 0.079,
+      "symbol": "RELIW"
+    },
+    {
+      "change": 0.0936,
+      "percent_change": 23.26,
+      "price": 0.496,
+      "symbol": "CACO"
+    },
+    {
+      "change": 28.15,
+      "percent_change": 22.85,
+      "price": 151.35,
+      "symbol": "CVLT"
+    },
+    {
+      "change": 0.0699,
+      "percent_change": 22.84,
+      "price": 0.3759,
+      "symbol": "SNOA"
+    },
+    {
+      "change": 0.4,
+      "percent_change": 22.22,
+      "price": 2.2,
+      "symbol": "ANTE"
+    },
+    {
+      "change": 2.49,
+      "percent_change": 21.19,
+      "price": 14.24,
+      "symbol": "HLIT"
+    },
+    {
+      "change": 0.0401,
+      "percent_change": 21.12,
+      "price": 0.23,
+      "symbol": "AITRR"
+    },
+    {
+      "change": 0.0019,
+      "percent_change": 21.11,
+      "price": 0.0109,
+      "symbol": "CINGW"
+    },
+    {
+      "change": 2.7,
+      "percent_change": 20.71,
+      "price": 15.74,
+      "symbol": "ROIC"
+    },
+    {
+      "change": 0.225,
+      "percent_change": 20.09,
+      "price": 1.345,
+      "symbol": "MULN"
+    },
+    {
+      "change": 0.0499,
+      "percent_change": 19.96,
+      "price": 0.2999,
+      "symbol": "AMBI.WS"
+    },
+    {
+      "change": 0.0499,
+      "percent_change": 19.95,
+      "price": 0.3,
+      "symbol": "NXPLW"
+    },
+    {
+      "change": 0.1695,
+      "percent_change": 19.7,
+      "price": 1.03,
+      "symbol": "INVO"
+    },
+    {
+      "change": 0.0896,
+      "percent_change": 19.05,
+      "price": 0.56,
+      "symbol": "BFI"
+    }
+  ],
+  "last_updated": "2024-07-30T23:59:00.091255034Z",
+  "losers": [
+    {
+      "change": -48.45,
+      "percent_change": -80.08,
+      "price": 12.05,
+      "symbol": "QXO"
+    },
+    {
+      "change": -0.4322,
+      "percent_change": -77.71,
+      "price": 0.124,
+      "symbol": "VBIV"
+    },
+    {
+      "change": -0.769,
+      "percent_change": -66.29,
+      "price": 0.391,
+      "symbol": "BIMI"
+    },
+    {
+      "change": -0.63,
+      "percent_change": -60.58,
+      "price": 0.41,
+      "symbol": "CNSP"
+    },
+    {
+      "change": -0.286,
+      "percent_change": -48.47,
+      "price": 0.304,
+      "symbol": "GIPRW"
+    },
+    {
+      "change": -0.0354,
+      "percent_change": -45.74,
+      "price": 0.042,
+      "symbol": "AP.WS"
+    },
+    {
+      "change": -0.5051,
+      "percent_change": -42.99,
+      "price": 0.6699,
+      "symbol": "RENB"
+    },
+    {
+      "change": -0.029,
+      "percent_change": -41.43,
+      "price": 0.041,
+      "symbol": "ISRLW"
+    },
+    {
+      "change": -0.075,
+      "percent_change": -40.54,
+      "price": 0.11,
+      "symbol": "OPTXW"
+    },
+    {
+      "change": -3.24,
+      "percent_change": -37.72,
+      "price": 5.35,
+      "symbol": "WHLR"
+    },
+    {
+      "change": -1.38,
+      "percent_change": -37.4,
+      "price": 2.31,
+      "symbol": "VSEE"
+    },
+    {
+      "change": -0.0352,
+      "percent_change": -36.63,
+      "price": 0.0609,
+      "symbol": "SVIIW"
+    },
+    {
+      "change": -0.0091,
+      "percent_change": -36.25,
+      "price": 0.016,
+      "symbol": "DNA.WS"
+    },
+    {
+      "change": -0.018,
+      "percent_change": -36,
+      "price": 0.032,
+      "symbol": "WKSPW"
+    },
+    {
+      "change": -0.0163,
+      "percent_change": -35.21,
+      "price": 0.03,
+      "symbol": "SPECW"
+    },
+    {
+      "change": -0.9,
+      "percent_change": -35.02,
+      "price": 1.67,
+      "symbol": "BLMZ"
+    },
+    {
+      "change": -0.0485,
+      "percent_change": -35.02,
+      "price": 0.09,
+      "symbol": "MNTN.WS"
+    },
+    {
+      "change": -0.0549,
+      "percent_change": -32.29,
+      "price": 0.1151,
+      "symbol": "GOVXW"
+    },
+    {
+      "change": -0.0599,
+      "percent_change": -31.54,
+      "price": 0.13,
+      "symbol": "BNAIW"
+    },
+    {
+      "change": -0.0125,
+      "percent_change": -30.71,
+      "price": 0.0282,
+      "symbol": "CLDI.WS"
+    },
+    {
+      "change": -0.0067,
+      "percent_change": -30.18,
+      "price": 0.0155,
+      "symbol": "PRSTW"
+    },
+    {
+      "change": -0.85,
+      "percent_change": -30.04,
+      "price": 1.98,
+      "symbol": "FAAS"
+    },
+    {
+      "change": -0.015,
+      "percent_change": -30,
+      "price": 0.035,
+      "symbol": "PRST"
+    },
+    {
+      "change": -0.0149,
+      "percent_change": -29.62,
+      "price": 0.0354,
+      "symbol": "SST.WS"
+    },
+    {
+      "change": -0.0029,
+      "percent_change": -29.29,
+      "price": 0.007,
+      "symbol": "HUBCZ"
+    },
+    {
+      "change": -0.425,
+      "percent_change": -28.62,
+      "price": 1.06,
+      "symbol": "EKSO"
+    },
+    {
+      "change": -0.0588,
+      "percent_change": -28.16,
+      "price": 0.15,
+      "symbol": "RVMDW"
+    },
+    {
+      "change": -0.45,
+      "percent_change": -27.95,
+      "price": 1.16,
+      "symbol": "TLSIW"
+    },
+    {
+      "change": -0.0104,
+      "percent_change": -27.15,
+      "price": 0.0279,
+      "symbol": "EVTL.WS"
+    },
+    {
+      "change": -0.0048,
+      "percent_change": -25.95,
+      "price": 0.0137,
+      "symbol": "WINVW"
+    },
+    {
+      "change": -4.22,
+      "percent_change": -25.7,
+      "price": 12.2,
+      "symbol": "NVAX"
+    },
+    {
+      "change": -0.0069,
+      "percent_change": -25.65,
+      "price": 0.02,
+      "symbol": "NUKKW"
+    },
+    {
+      "change": -2.02,
+      "percent_change": -25.6,
+      "price": 5.87,
+      "symbol": "CETU"
+    },
+    {
+      "change": -0.1314,
+      "percent_change": -25.53,
+      "price": 0.3832,
+      "symbol": "DNMR"
+    },
+    {
+      "change": -4.2,
+      "percent_change": -25.45,
+      "price": 12.3,
+      "symbol": "NIPG"
+    },
+    {
+      "change": -0.0426,
+      "percent_change": -25.42,
+      "price": 0.125,
+      "symbol": "SURGW"
+    },
+    {
+      "change": -0.01,
+      "percent_change": -25,
+      "price": 0.03,
+      "symbol": "IVCAW"
+    },
+    {
+      "change": -0.052,
+      "percent_change": -24.76,
+      "price": 0.158,
+      "symbol": "LVWR.WS"
+    },
+    {
+      "change": -2.92,
+      "percent_change": -24.56,
+      "price": 8.97,
+      "symbol": "MEDS"
+    },
+    {
+      "change": -0.2167,
+      "percent_change": -23.64,
+      "price": 0.7,
+      "symbol": "SGMO"
+    },
+    {
+      "change": -0.008,
+      "percent_change": -23.53,
+      "price": 0.026,
+      "symbol": "ABVEW"
+    },
+    {
+      "change": -8.38,
+      "percent_change": -23.52,
+      "price": 27.25,
+      "symbol": "SYM"
+    },
+    {
+      "change": -0.0521,
+      "percent_change": -23.47,
+      "price": 0.1699,
+      "symbol": "ONFOW"
+    },
+    {
+      "change": -0.0364,
+      "percent_change": -23.27,
+      "price": 0.12,
+      "symbol": "LPTV"
+    },
+    {
+      "change": -0.46,
+      "percent_change": -22.89,
+      "price": 1.55,
+      "symbol": "ESLA"
+    },
+    {
+      "change": -0.0149,
+      "percent_change": -22.78,
+      "price": 0.0505,
+      "symbol": "CGBSW"
+    },
+    {
+      "change": -0.001,
+      "percent_change": -22.73,
+      "price": 0.0034,
+      "symbol": "BROGW"
+    },
+    {
+      "change": -0.05,
+      "percent_change": -22.73,
+      "price": 0.17,
+      "symbol": "DRTSW"
+    },
+    {
+      "change": -4.39,
+      "percent_change": -22.64,
+      "price": 15,
+      "symbol": "SERV"
+    },
+    {
+      "change": -1.62,
+      "percent_change": -22.19,
+      "price": 5.68,
+      "symbol": "WINT"
+    }
+  ],
+  "market_type": "stocks"
+}

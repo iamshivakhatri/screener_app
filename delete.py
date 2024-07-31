@@ -3,13 +3,16 @@ import json
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 import yfinance as yf
+from load_dotenv import load_dotenv
+
+load_dotenv()
 # url = "https://data.alpaca.markets/v1beta1/screener/stocks/most-actives"
 
 
 # headers = {
 #     "accept": "application/json",
-#     "APCA-API-KEY-ID": "PK2XO9N6WHJPS8B0V0E2",
-#     "APCA-API-SECRET-KEY": "8QT4Jhd3tYCfGosYjmJSbicKQjGfeb3ZmkXaYum2"
+#     "APCA-API-KEY-ID": os.environ.get("API_KEY"),
+#     "APCA-API-SECRET-KEY": os.environ.get("API_SECRET")
 # }
 
 
