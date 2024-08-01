@@ -74,7 +74,7 @@ print(merged_df)
 
 print(merged_df.columns)
 
-merged_df = merged_df[['symbol', 'ap',  'bp',
+merged_df = merged_df[['symbol', 'volume', 'ap',  'bp',
       't']]
 print(merged_df)
 
@@ -82,4 +82,8 @@ merged_df = merged_df.rename(columns={'ap': 'ask_price', 'bp': 'bid_price', 't':
 merged_df['timestamp'] = pd.to_datetime(merged_df['timestamp'])
 
 filtered_df = merged_df[(merged_df['ask_price'] > 1) & (merged_df['ask_price'] < 20)]
+filtered_df = filtered_df.reset_index(drop=True)
+filtered_df.sort_values(by='volume', ascending=False, inplace=True)
+
+
 print(filtered_df)
