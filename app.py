@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 import pandas as pd
+import json
 
 app = Flask(__name__)
 
@@ -24,8 +25,19 @@ def load_data():
 
 @app.route('/')
 def index():
-    data = load_data()
-    return render_template('index.html', data=data)
+    # Load and process the first dataset
+    with open("fmp_gainers.json", "r") as f:
+        gainers_data = json.load(f)
+    gainers_df = pd.DataFrame(gainers_data)
+    gainers_filtered = gainers_df[(gainers_df['price'] > 1) & (gainers_df['price'] < 20)]
+
+    # Load and process the second dataset
+    with open("fmp_active.json", "r") as f:
+        active_data = json.load(f)
+    active_df = pd.DataFrame(active_data)
+    active_filtered = active_df[(active_df['price'] > 1) & (active_df['price'] < 20)]
+
+    return render_template('index.html', gainers=gainers_filtered.to_html(classes='data'), active=active_filtered.to_html(classes='data'))
 
 @app.route('/day_gainers')
 def day_gainers():

@@ -18,6 +18,7 @@ import pandas as pd
 # # Define the endpoint for stock market gainers
 # url = f'https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey={api_key}'
 
+
 # response = requests.get(url)
 
 # # Check if the request was successful
