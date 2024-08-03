@@ -30,12 +30,15 @@ def index():
         gainers_data = json.load(f)
     gainers_df = pd.DataFrame(gainers_data)
     gainers_filtered = gainers_df[(gainers_df['price'] > 1) & (gainers_df['price'] < 20)]
+    gainers_filtered = gainers_filtered.reset_index(drop=True)
+    gainers_filtered = gainers_filtered.head(10)
 
     # Load and process the second dataset
     with open("fmp_active.json", "r") as f:
         active_data = json.load(f)
     active_df = pd.DataFrame(active_data)
-    active_filtered = active_df[(active_df['price'] > 1) & (active_df['price'] < 20)]
+    active_filtered = active_df[( active_df['price'] > 1) & ( active_df['price'] < 20) & ( active_df['changesPercentage'] > 0)]
+    active_filtered = active_filtered.reset_index(drop=True)
 
     return render_template('index.html', gainers=gainers_filtered.to_html(classes='data'), active=active_filtered.to_html(classes='data'))
 

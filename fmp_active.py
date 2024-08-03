@@ -37,5 +37,5 @@ print(len(data))
 
 df = pd.DataFrame(data)
 print(df.head())
-df_filtered = df[(df['price'] > 1) & (df['price'] < 20)]
+df_filtered = df[(df['price'] > 1) & (df['price'] < 20) & (df['changesPercentage'] > 0)]
 print(df_filtered.head())
