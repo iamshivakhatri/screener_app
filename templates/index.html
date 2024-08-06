@@ -20,9 +20,17 @@
             <h3>Active Stocks</h3>
             {{ active|safe }}
         </div>
+        <div class="table-wrapper">
+            <h3>News</h3>
+            <ul>
+                {% for news_item in news %}
+                    <li>
+                        <a href="{{ news_item.url }}" target="_blank">{{ news_item.title }}</a>
+                        <p>{{ news_item.summary }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-
-
-
 </body>
 </html>
