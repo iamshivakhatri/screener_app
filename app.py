@@ -32,6 +32,7 @@ def index():
     gainers_filtered = gainers_df[(gainers_df['price'] > 1) & (gainers_df['price'] < 20)]
     gainers_filtered = gainers_filtered.reset_index(drop=True)
     gainers_filtered = gainers_filtered.head(10)
+    gainers_filtered = gainers_filtered
 
     # Load and process the second dataset
     with open("fmp_active.json", "r") as f:
@@ -40,7 +41,7 @@ def index():
     active_filtered = active_df[( active_df['price'] > 1) & ( active_df['price'] < 20) & ( active_df['changesPercentage'] > 0)]
     active_filtered = active_filtered.reset_index(drop=True)
 
-    return render_template('index.html', gainers=gainers_filtered.to_html(classes='data'), active=active_filtered.to_html(classes='data'))
+    return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 
 @app.route('/day_gainers')
 def day_gainers():
@@ -66,6 +67,11 @@ def trending():
 def undervalued_large_caps():
     data = load_data()['undervalued_large_caps']
     return render_template('undervalued_large_caps.html', table=data.to_html(classes='table table-striped'))
+
+@app.route('/try_page')
+def try_page():
+    return render_template('try.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Data Dashboard</title>
+    <!-- Include Tabulator CSS from CDN -->
+    <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   
 </head>
 <body>
     <div class="jumbotron">
@@ -15,11 +18,11 @@
         <div class="tables-container">
             <div class="table-wrapper">
                 <h3>Gainers</h3>
-                {{ gainers|safe }}
+                <div id="gainers-table"></div>
             </div>
             <div class="table-wrapper">
                 <h3>Active Stocks</h3>
-                {{ active|safe }}
+                <div id="active-table"></div>
             </div>
         </div>
         <div class="news-container">
@@ -36,5 +39,44 @@
             </div>
         </div>
     </div>
+
+    <!-- Include Tabulator JS from CDN -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const gainersData = {{ gainers | tojson | safe }};
+            const activeData = {{ active | tojson | safe }};
+            
+            console.log(gainersData);
+            console.log(activeData);
+    
+            // Initialize Gainers table with hard-coded column names
+            var gainersTable = new Tabulator("#gainers-table", {
+                layout: "fitColumns",
+                columns: [
+                    { title: "Symbol", field: "symbol" },
+                    { title: "Name", field: "name" },
+                    { title: "Change", field: "change" },
+                    { title: "Price", field: "price" },
+                    { title: "Percent Change", field: "changesPercentage" },
+                ],
+                data: gainersData,
+            });
+    
+            // Initialize Active Stocks table
+            var activeTable = new Tabulator("#active-table", {
+                layout: "fitColumns",
+                columns: [
+                    { title: "Symbol", field: "symbol" },
+                    { title: "Name", field: "name" },
+                    { title: "Price", field: "price" },
+                    { title: "Change", field: "change" },
+                    { title: "Percent Change", field: "changesPercentage" },
+                ],
+                data: activeData,
+            });
+        });
+    </script>
+    
 </body>
 </html>
