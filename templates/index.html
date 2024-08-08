@@ -4,41 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Data Dashboard</title>
+    <!-- Include Tailwind CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Include Tabulator CSS from CDN -->
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-   
+    <link href="{{url_for('static', filename='css/output.css')}}" rel="stylesheet">
 </head>
-<body>
-    <div class="jumbotron">
-        <h2>Welcome to the Stock Data Dashboard</h2>
-        <p>Explore the latest stock data across different categories.</p>
-    </div>
-    <div class="content-container">
-        <div class="tables-container">
-            <div class="table-wrapper">
-                <h3>Gainers</h3>
-                <div id="gainers-table"></div>
-            </div>
-            <div class="table-wrapper">
-                <h3>Active Stocks</h3>
-                <div id="active-table"></div>
-            </div>
-        </div>
-        <div class="news-container">
-            <div class="table-wrapper">
-                <h3>News</h3>
-                <ul>
-                    {% for news_item in news %}
-                        <li>
-                            <a href="{{ news_item.url }}" target="_blank">{{ news_item.title }}</a>
-                            <p>{{ news_item.summary }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
+<style>
+ #gainers-table{
+    width: 400px;
+}
+#active-table{
+    width: 400px;
+}
+
+</style>
+<body class="bg-gray-400 text-gray-100 font-sans antialiased">
+
+  
+
+    <main class="container p-6 flex ">
+        <section class=" flex-1">
+                <div>
+                <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Gainers</h3> -->
+                <div id="gainers-table" class="mb-2"></div>
+                </div>
+
+                <div>
+                <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Active Stocks</h3> -->
+                <div id="active-table" class="mb-2"></div>
+                </div>
+                <div class="bg-gray-800 p-6  rounded-lg shadow-lg space-y-6">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-100">News</h3>
+                    <ul class="list-disc pl-5 text-gray-300">
+                        {% for news_item in news %}
+                            <li class="mb-4">
+                                <a href="{{ news_item.url }}" target="_blank" class="text-blue-400 hover:underline">{{ news_item.title }}</a>
+                                <p class="mt-1">{{ news_item.summary }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+        </section>
+        <section class="flex-1">
+            It will have a graph.
+        </section>
+
+        
+    </main>
 
     <!-- Include Tabulator JS from CDN -->
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
@@ -54,29 +68,71 @@
             var gainersTable = new Tabulator("#gainers-table", {
                 layout: "fitColumns",
                 columns: [
-                    { title: "Symbol", field: "symbol" },
+                    { title: "Symbol",
+                     field: "symbol",
+                    
+                    },
                     { title: "Name", field: "name" },
                     { title: "Change", field: "change" },
                     { title: "Price", field: "price" },
-                    { title: "Percent Change", field: "changesPercentage" },
+                    { title: "% C",
+                     field: "changesPercentage" ,
+                     formatter: function(cell, formatterParams, onRendered){
+                            let row = cell.getRow();
+                            let pc = cell.getValue();
+                            row.getElement().style.color = "darkgreen";
+                           
+                            return pc;
+                            
+                        },
+                    },
+                    
                 ],
+               
                 data: gainersData,
             });
+
+            gainersTable.on("rowClick", function(e, row) {
+                console.log("Row Clicked:", row.getData());
+            });
+
+
     
             // Initialize Active Stocks table
             var activeTable = new Tabulator("#active-table", {
                 layout: "fitColumns",
+                width: 400,
                 columns: [
                     { title: "Symbol", field: "symbol" },
                     { title: "Name", field: "name" },
-                    { title: "Price", field: "price" },
+                    { title: "Price", field: "price"},
                     { title: "Change", field: "change" },
-                    { title: "Percent Change", field: "changesPercentage" },
+                    { title: "% C", field: "changesPercentage",
+              
+                     formatter: function(cell, formatterParams, onRendered){
+                            let row = cell.getRow();
+                            let pc = cell.getValue();
+                            row.getElement().style.color = "darkgreen";
+                           
+                            return pc;
+                            
+                        },
+                    },
+                 
                 ],
                 data: activeData,
+                
             });
+            activeTable.on("rowClick", function(e, row) {
+                console.log("Row Clicked:", row.getData());
+             });
+
         });
+
+        
+        async function get_news(ticker){
+
+        }
     </script>
-    
 </body>
 </html>

@@ -23,6 +23,12 @@ def load_data():
         'small_cap_gainers': df_small_cap_gainers
     }
 
+def get_news(ticker_list):
+    news = {}
+    for ticker in ticker_list:
+        news[ticker] = []
+        
+
 @app.route('/')
 def index():
     # Load and process the first dataset
@@ -32,7 +38,8 @@ def index():
     gainers_filtered = gainers_df[(gainers_df['price'] > 1) & (gainers_df['price'] < 20)]
     gainers_filtered = gainers_filtered.reset_index(drop=True)
     gainers_filtered = gainers_filtered.head(10)
-    gainers_filtered = gainers_filtered
+    gainer_tickers_list = gainers_filtered['symbol'].tolist()
+    print(gainer_tickers_list)
 
     # Load and process the second dataset
     with open("fmp_active.json", "r") as f:
@@ -40,6 +47,8 @@ def index():
     active_df = pd.DataFrame(active_data)
     active_filtered = active_df[( active_df['price'] > 1) & ( active_df['price'] < 20) & ( active_df['changesPercentage'] > 0)]
     active_filtered = active_filtered.reset_index(drop=True)
+    active_ticker_list = active_filtered['symbol'].tolist()
+    print(active_ticker_list)
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 

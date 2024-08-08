@@ -1,0 +1,310 @@
+{
+  "news": [
+    {
+      "author": "Benzinga Insights",
+      "content": "",
+      "created_at": "2024-08-07T17:35:12Z",
+      "headline": "10 Information Technology Stocks Whale Activity In Today's Session",
+      "id": 40228983,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2023/options_image_2.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2023/options_image_2.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2023/options_image_2.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": " ",
+      "symbols": [
+        "AAPL",
+        "AMD",
+        "ARM",
+        "AVGO",
+        "FSLY",
+        "HUBS",
+        "MSFT",
+        "MSTR",
+        "NVDA",
+        "SMCI"
+      ],
+      "updated_at": "2024-08-07T17:35:13Z",
+      "url": "https://www.benzinga.com/insights/options/24/08/40228983/10-information-technology-stocks-whale-activity-in-todays-session"
+    },
+    {
+      "author": "Benzinga Newsdesk",
+      "content": "",
+      "created_at": "2024-08-07T17:22:44Z",
+      "headline": "'Apple, Major League Baseball announce September \"Friday Night Baseball\" schedule' - Apple",
+      "id": 40228716,
+      "images": [],
+      "source": "benzinga",
+      "summary": "",
+      "symbols": [
+        "AAPL"
+      ],
+      "updated_at": "2024-08-07T17:22:44Z",
+      "url": "https://www.benzinga.com/news/24/08/40228716/apple-major-league-baseball-announce-september-friday-night-baseball-schedule-apple"
+    },
+    {
+      "author": "Aaron Bry",
+      "content": "",
+      "created_at": "2024-08-07T15:33:49Z",
+      "headline": "Warren Buffett's Approach To Investing In Election Years",
+      "id": 40225783,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/warren-buffett-ai3.png"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/warren-buffett-ai3.png"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/warren-buffett-ai3.png"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Warren Buffett, known as the &#39;Oracle of Omaha&#39;, is a highly successful American investor who manages his portfolio consistently, regardless of elections or market conditions.",
+      "symbols": [
+        "AAPL",
+        "ABBV",
+        "BAC",
+        "BRK",
+        "DAL",
+        "DE",
+        "JPM",
+        "LUV",
+        "PFE",
+        "WFC",
+        "WMT"
+      ],
+      "updated_at": "2024-08-07T15:33:50Z",
+      "url": "https://www.benzinga.com/general/education/24/08/40225783/warren-buffetts-approach-to-investing-in-election-years"
+    },
+    {
+      "author": "Surbhi Jain",
+      "content": "",
+      "created_at": "2024-08-07T14:47:01Z",
+      "headline": "Apple Retains $3T Status, Nvidia Does Not As Market Overcomes Volatility",
+      "id": 40223904,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/untitled.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/untitled.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/untitled.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Apple is still a $3-trillion company. Other stocks lost their valuations due to what analyst Daniel Ives called a &#34;Category 5 storm sell-off.&#34;",
+      "symbols": [
+        "AAPL",
+        "AMZN",
+        "MSFT",
+        "NVDA",
+        "QQQ",
+        "QQQM",
+        "XLK"
+      ],
+      "updated_at": "2024-08-07T14:47:01Z",
+      "url": "https://www.benzinga.com/news/large-cap/24/08/40223904/apple-retains-3t-status-nvidia-does-not-as-market-overcomes-volatility"
+    },
+    {
+      "author": "Gary Brode",
+      "content": "",
+      "created_at": "2024-08-07T14:06:49Z",
+      "headline": "5 Things To Know In Investing This Week: The Trump Bitcoin Issue",
+      "id": 40222520,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/traxer-dv7uyaptv6w-unsplash_3.jpg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/traxer-dv7uyaptv6w-unsplash_3.jpg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/traxer-dv7uyaptv6w-unsplash_3.jpg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "President Trump talks about Bitcoin and he and some other politicians call for a strategic Bitcoin reserve. Plus, we have another week of tech stock obliteration. It’s not that earnings were bad; but rather, that expectations and valuations were so high. Intel (NASDAQ: INTC) is the exception.",
+      "symbols": [
+        "AAPL",
+        "AMZN",
+        "BTCUSD",
+        "INTC",
+        "META",
+        "NVDA"
+      ],
+      "updated_at": "2024-08-07T14:06:52Z",
+      "url": "https://www.benzinga.com/markets/asia/24/08/40222520/5-things-to-know-in-investing-this-week-the-trump-bitcoin-issue"
+    },
+    {
+      "author": "Nabaparna Bhattacharya",
+      "content": "",
+      "created_at": "2024-08-07T13:14:27Z",
+      "headline": "What's Going On With Trump Media & Technology Stock Today?",
+      "id": 40220992,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/Donald-Trump-on-Truth-Social.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/Donald-Trump-on-Truth-Social.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/Donald-Trump-on-Truth-Social.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Trump Media &amp; Technology Group revealed the launch of linear TV streaming on iOS and Android devices.",
+      "symbols": [
+        "AAPL",
+        "DJT"
+      ],
+      "updated_at": "2024-08-07T13:14:27Z",
+      "url": "https://www.benzinga.com/markets/equities/24/08/40220992/whats-going-on-with-trump-media-technology-stock-today"
+    },
+    {
+      "author": "Shanthi Rexaline",
+      "content": "",
+      "created_at": "2024-08-07T07:55:53Z",
+      "headline": "Apple's Margins Hit Near Decade-Low In China Due To Discounting, Weaker Yuan, Says Analyst: Competitive Pressure Or Management's Deliberate Plan?",
+      "id": 40212183,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/Apple-iPhone-China_0.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/Apple-iPhone-China_0.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/Apple-iPhone-China_0.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Apple&#39;s Q3 report showed that China was the worst-performing geography and given the country&#39;s importance, this data should worry investors.",
+      "symbols": [
+        "AAPL",
+        "XIACF"
+      ],
+      "updated_at": "2024-08-07T11:48:59Z",
+      "url": "https://www.benzinga.com/analyst-ratings/analyst-color/24/08/40212183/apples-margins-hit-near-decade-low-in-china-due-to-discounting-weaker-yuan-says-ana"
+    },
+    {
+      "author": "Rounak Jain",
+      "content": "",
+      "created_at": "2024-08-07T06:31:45Z",
+      "headline": "Apple Is Reportedly Using Prompt Engineering For Its AI Features, New macOS Beta Reveals: 'You Are A Helpful Mail Assistant…'",
+      "id": 40211107,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/07/Apple-Intelligence.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/07/Apple-Intelligence.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/07/Apple-Intelligence.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Apple&#39;s hidden AI prompts have been discovered in the latest macOS beta, shedding light on the tech giant&#39;s efforts to enhance accuracy and prevent hallucinations in its Apple Intelligence suite.",
+      "symbols": [
+        "AAPL"
+      ],
+      "updated_at": "2024-08-07T06:31:45Z",
+      "url": "https://www.benzinga.com/24/08/40211107/apple-is-reportedly-using-prompt-engineering-for-its-ai-features-new-macos-beta-reveals-you-are-a-he"
+    },
+    {
+      "author": "Hayden Buckfire",
+      "content": "",
+      "created_at": "2024-08-06T20:08:00Z",
+      "headline": "Will Google Antitrust Decision Affect Ongoing Lawsuits Against Apple And Meta? Legal Experts Are At Odds",
+      "id": 40201751,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/06/Dollar-Money-And-Judges-Gavel-On-Table--.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/06/Dollar-Money-And-Judges-Gavel-On-Table--.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/06/Dollar-Money-And-Judges-Gavel-On-Table--.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Some legal experts argue that the Google ruling is unlikely to affect other antitrust cases. Others say it will. ",
+      "symbols": [
+        "AAPL",
+        "AMZN",
+        "GOOG",
+        "GOOGL",
+        "META"
+      ],
+      "updated_at": "2024-08-06T20:08:01Z",
+      "url": "https://www.benzinga.com/markets/equities/24/08/40201751/will-google-antitrust-decision-affect-ongoing-lawsuits-against-apple-and-meta-legal-experts-are-"
+    },
+    {
+      "author": "Nabaparna Bhattacharya",
+      "content": "",
+      "created_at": "2024-08-06T18:23:27Z",
+      "headline": "Google Parent Alphabet's Breakup Could Boost Stock Value, Citing Higher Investor Appeal For Pure-Play Assets: Analyst",
+      "id": 40199230,
+      "images": [
+        {
+          "size": "large",
+          "url": "https://cdn.benzinga.com/files/imagecache/2048x1536xUP/images/story/2024/08/06/Google-Photo-by-DenPhotos-on-Shutterstoc.jpeg"
+        },
+        {
+          "size": "small",
+          "url": "https://cdn.benzinga.com/files/imagecache/1024x768xUP/images/story/2024/08/06/Google-Photo-by-DenPhotos-on-Shutterstoc.jpeg"
+        },
+        {
+          "size": "thumb",
+          "url": "https://cdn.benzinga.com/files/imagecache/250x187xUP/images/story/2024/08/06/Google-Photo-by-DenPhotos-on-Shutterstoc.jpeg"
+        }
+      ],
+      "source": "benzinga",
+      "summary": "Analyst Laura Martin predicts Alphabet&#39;s breakup could increase share value, citing higher investor interest in pure-play assets and potential regulatory benefits.\n\n\n\n",
+      "symbols": [
+        "AAPL",
+        "GOOG",
+        "GOOGL"
+      ],
+      "updated_at": "2024-08-06T18:23:27Z",
+      "url": "https://www.benzinga.com/markets/equities/24/08/40199230/google-parent-alphabets-breakup-could-boost-stock-value-citing-higher-investor-appeal-for-pure-p"
+    }
+  ],
+  "next_page_token": "MTcyMjk2ODYwNzAwMDAwMDAwMHw0MDE5OTIzMA=="
+}
