@@ -1,6 +1,17 @@
 from flask import Flask, render_template
 import pandas as pd
 import json
+import finnhub
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+FINNHUB_API_KEY = os.getenv('FINNHUB_API_KEY')
+
+finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+
 
 app = Flask(__name__)
 
@@ -25,9 +36,23 @@ def load_data():
 
 def get_news(ticker_list):
     news = {}
+    now = datetime.now()
+    start_date = now.strftime('%Y-%m-%d')
+    end_date = now.strftime('%Y-%m-%d')
+
     for ticker in ticker_list:
         news[ticker] = []
-        
+        company_news = finnhub_client.company_news(ticker, _from=start_date, to=end_date)
+        for article in company_news:
+            news[ticker].append(article['summary'])
+    
+    return news
+
+def combine_lists(list1, list2):
+    combined_set = set(list1) | set(list2)  # Combine both lists into a set to remove duplicates
+    combined_list = list(combined_set)      # Convert the set back to a list
+    return combined_list
+
 
 @app.route('/')
 def index():
@@ -49,6 +74,8 @@ def index():
     active_filtered = active_filtered.reset_index(drop=True)
     active_ticker_list = active_filtered['symbol'].tolist()
     print(active_ticker_list)
+    ticker_list = combine_lists(gainer_tickers_list, active_ticker_list)
+    news = get_news(ticker_list)
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 

@@ -6,3 +6,4 @@ dataset
 data
 *.csv
 node_modules
+.env
