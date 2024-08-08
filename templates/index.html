@@ -12,10 +12,14 @@
 </head>
 <style>
  #gainers-table{
-    width: 400px;
+    width: 500px;
 }
 #active-table{
-    width: 400px;
+    width: 500px;
+}
+
+#news_table{
+    width: 500px;
 }
 
 </style>
@@ -34,8 +38,8 @@
                 <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Active Stocks</h3> -->
                 <div id="active-table" class="mb-2"></div>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6">
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-100">News</h3>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6 max-h-96 overflow-y-auto max-w-400" id="news_table">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-100" id="news_title">News</h3>
                     <ul id="news-container" class="list-disc pl-5 text-gray-300">
                         <!-- News items will be inserted here -->
                     </ul>
@@ -90,6 +94,7 @@
 
             gainersTable.on("rowClick", function(e, row) {
                 console.log("Row Clicked:", row.getData());
+                get_news(row.getData().symbol);
             });
 
 
@@ -126,34 +131,68 @@
 
         });
 
-        
         async function get_news(ticker){
-        const response = await fetch(`/news/${ticker}`);
-        const data = await response.json();
-        console.log(data);
+            const response = await fetch(`/news/${ticker}`);
+            const data = await response.json();
+            console.log("Fetched data:", data);
 
-        const newsContainer = document.getElementById('news-container');
-        newsContainer.innerHTML = ''; // Clear previous news
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.innerHTML = ''; // Clear previous news
 
-        data.forEach(news_item => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('mb-4');
+            const newsTitle = document.getElementById('news_title');
+            newsContainer.innerHTML = '';
+            newsTitle.innerHTML = `${ticker} News`;
 
-            const link = document.createElement('a');
-            link.href = news_item.url;
-            link.target = '_blank';
-            link.classList.add('text-blue-400', 'hover:underline');
-            link.textContent = news_item.title;
+            if (data.length === 0) {
+                const listItem = document.createElement('li');
+                listItem.classList.add('mb-4');
+                listItem.textContent = "No news available";
+                newsContainer.appendChild(listItem);
+                return;
+            }else{
+                data.forEach(news_item => {
+                console.log("Processing news item:", news_item);
+                
+                if (!news_item ) {
+                    console.log("News item is incomplete or missing:", news_item);
+                    
+                    // If any required information is missing, create a placeholder item
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('mb-4');
+                    listItem.textContent = "News couldn't be retrieved";
+                    newsContainer.appendChild(listItem);
+                    return;
+                }
 
-            const summary = document.createElement('p');
-            summary.classList.add('mt-1');
-            summary.textContent = news_item.summary;
+                const listItem = document.createElement('li');
+                listItem.classList.add('mb-4');
 
-            listItem.appendChild(link);
-            listItem.appendChild(summary);
-            newsContainer.appendChild(listItem);
-        });
-}
+                const link = document.createElement('a');
+                link.href = news_item.url;
+                link.target = '_blank';
+                link.classList.add('text-blue-400', 'hover:underline');
+                link.textContent = news_item.title;
+
+                const summary = document.createElement('p');
+                summary.classList.add('mt-1');
+                summary.textContent = news_item.summary;
+
+                listItem.appendChild(link);
+                listItem.appendChild(summary);
+                newsContainer.appendChild(listItem);
+                
+                console.log("Appended news item:", news_item);
+            });
+            }
+
+   
+        }
+
+
+        
+    
+       
+
 
     </script>
 </body>

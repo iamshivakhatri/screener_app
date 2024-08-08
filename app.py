@@ -51,7 +51,12 @@ def get_news(ticker_list):
         news[ticker] = []
         company_news = finnhub_client.company_news(ticker, _from=start_date, to=end_date)
         for article in company_news:
-            news[ticker].append(article['summary'])
+            # news[ticker].append(article['summary'])
+            news[ticker].append({
+                'title': article['headline'],
+                'summary': article['summary'],
+                'url': article['url']
+            })
     
     return news
 
