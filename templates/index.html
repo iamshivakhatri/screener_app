@@ -34,21 +34,17 @@
                 <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Active Stocks</h3> -->
                 <div id="active-table" class="mb-2"></div>
                 </div>
-                <div class="bg-gray-800 p-6  rounded-lg shadow-lg space-y-6">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6">
                     <h3 class="text-2xl font-semibold mb-4 text-gray-100">News</h3>
-                    <ul class="list-disc pl-5 text-gray-300">
-                        {% for news_item in news %}
-                            <li class="mb-4">
-                                <a href="{{ news_item.url }}" target="_blank" class="text-blue-400 hover:underline">{{ news_item.title }}</a>
-                                <p class="mt-1">{{ news_item.summary }}</p>
-                            </li>
-                        {% endfor %}
+                    <ul id="news-container" class="list-disc pl-5 text-gray-300">
+                        <!-- News items will be inserted here -->
                     </ul>
                 </div>
+                
 
         </section>
         <section class="flex-1">
-            It will have a graph.
+            <div></div>
         </section>
 
         
@@ -124,15 +120,41 @@
                 
             });
             activeTable.on("rowClick", function(e, row) {
-                console.log("Row Clicked:", row.getData());
+                console.log("Row Clicked:", row.getData().symbol);
+                get_news(row.getData().symbol);
              });
 
         });
 
         
         async function get_news(ticker){
+        const response = await fetch(`/news/${ticker}`);
+        const data = await response.json();
+        console.log(data);
 
-        }
+        const newsContainer = document.getElementById('news-container');
+        newsContainer.innerHTML = ''; // Clear previous news
+
+        data.forEach(news_item => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('mb-4');
+
+            const link = document.createElement('a');
+            link.href = news_item.url;
+            link.target = '_blank';
+            link.classList.add('text-blue-400', 'hover:underline');
+            link.textContent = news_item.title;
+
+            const summary = document.createElement('p');
+            summary.classList.add('mt-1');
+            summary.textContent = news_item.summary;
+
+            listItem.appendChild(link);
+            listItem.appendChild(summary);
+            newsContainer.appendChild(listItem);
+        });
+}
+
     </script>
 </body>
 </html>
