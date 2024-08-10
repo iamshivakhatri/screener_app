@@ -5,6 +5,7 @@ import finnhub
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -15,6 +16,7 @@ finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
 news_cache = {}
 
 app = Flask(__name__)
+CORS(app)
 
 # Load data
 def load_data():
@@ -88,35 +90,12 @@ def index():
     print(active_ticker_list)
     ticker_list = combine_lists(gainer_tickers_list, active_ticker_list)
     global news_cache
-    news_cache = get_news(ticker_list)
-    print("This is news", news_cache)
+    # news_cache = get_news(ticker_list)
+    # print("This is news", news_cache)
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 
-@app.route('/day_gainers')
-def day_gainers():
-    data = load_data()['day_gainers']
-    return render_template('daily_gainers.html', table=data.to_html(classes='table table-striped'))
 
-@app.route('/small_cap_gainers')
-def small_cap_gainers():
-    data = load_data()['small_cap_gainers']
-    return render_template('small_cap_gainers.html', table=data.to_html(classes='table table-striped'))
-
-@app.route('/most_actives')
-def most_actives():
-    data = load_data()['most_actives']
-    return render_template('most_active.html', table=data.to_html(classes='table table-striped'))
-
-@app.route('/trending')
-def trending():
-    data = load_data()['trending']
-    return render_template('trending.html', table=data.to_html(classes='table table-striped'))
-
-@app.route('/undervalued_large_caps')
-def undervalued_large_caps():
-    data = load_data()['undervalued_large_caps']
-    return render_template('undervalued_large_caps.html', table=data.to_html(classes='table table-striped'))
 
 @app.route('/try_page')
 def try_page():
@@ -125,4 +104,4 @@ def try_page():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000)

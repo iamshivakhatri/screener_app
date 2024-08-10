@@ -1,146 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Data Dashboard</title>
-    <!-- <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css"> -->
-    <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
-    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+  <head>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        .jumbotron {
-            text-align: center;
-            padding: 2em;
-            background-color: #007bff;
-            color: white;
-            margin-bottom: 2em;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .content-container {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px;
-        }
-
-        .tables-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: 40%;
-        }
-
-        .news-container {
-            width: 55%;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin-bottom: 2em;
-            background-color: white;
-            padding: 1em;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+      #tvchart {
+        position: absolute;
+        width: 95vw;
+        height: 95vh;
+      }
     </style>
-</head>
-<body>
-    <div class="jumbotron">
-        <h2>Welcome to the Stock Data Dashboard</h2>
-        <p>Explore the latest stock data across different categories.</p>
-    </div>
-    <div class="content-container">
-        <div class="tables-container">
-            <div class="table-wrapper">
-                <h3>Gainers</h3>
-                <div id="gainers-table"></div>
-            </div>
-            <div class="table-wrapper">
-                <h3>Active Stocks</h3>
-                <div id="active-table"></div>
-            </div>
-        </div>
-        <div class="news-container">
-            <div class="table-wrapper">
-                <h3>News</h3>
-                <ul id="news-list"></ul>
-            </div>
-        </div>
-    </div>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrendLines</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        this is good and this is bad
+      </div>
+      <div id="tvchart">
+      </div>
 
-    <!-- <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script> -->
+    </div>
+    
+   
+
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Example data; replace with your real data fetching logic
-            var gainersData = [
-                {symbol: "AAPL", name: "Apple Inc.", price: 150, change: 2, percent_change: "1.35%"},
-                {symbol: "MSFT", name: "Microsoft Corp.", price: 250, change: 3, percent_change: "1.21%"},
-                // Add more gainers
-            ];
+        class ChartManager {
+  constructor() {
+    this.chart = null;
+    this.xspan = null;
+    this.klines = null;
+    this.startPoint = null;
+    this.lineSeries = null;
+    this.isUpdatingLine = false;
+    this.isHovered = false;
+    this.isDragging = false;
+    this.dragStartPoint = null;
+    this.dragStartLineData = null;
+    this.lastCrosshairPosition = null;
+    this.candleseries = null;
+    this.selectedPoint = null; //null/0/1
+    this.hoverThreshold = 0.01;
+    this.domElement = document.getElementById("tvchart");
+    this.initializeChart();
+    this.subscribeToEvents();
+    this.loadData();
+  }
 
-            var activeData = [
-                {symbol: "TSLA", name: "Tesla Inc.", price: 800, volume: 2000000},
-                {symbol: "AMZN", name: "Amazon.com Inc.", price: 3300, volume: 1500000},
-                // Add more active stocks
-            ];
+  initializeChart() {
+    const chartProperties = {
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: true,
+      },
+      crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+      },
+    };
+    this.chart = LightweightCharts.createChart(
+      this.domElement,
+      chartProperties
+    );
+    this.candleseries = this.chart.addCandlestickSeries();
+    this.lineSeries = this.chart.addLineSeries();
+  }
 
-            var newsData = [
-                {title: "News Title 1", url: "http://example.com/news1", summary: "Summary of news 1."},
-                {title: "News Title 2", url: "http://example.com/news2", summary: "Summary of news 2."},
-                // Add more news items
-            ];
+  subscribeToEvents() {
+    this.chart.subscribeClick(this.handleChartClick.bind(this));
+    this.chart.subscribeCrosshairMove(this.handleCrosshairMove.bind(this));
+    this.domElement.addEventListener(
+      "mousedown",
+      this.handleMouseDown.bind(this)
+    );
+    this.domElement.addEventListener("mouseup", this.handleMouseUp.bind(this));
+  }
+  
+  async loadData() {
+    try {
+      const response = await fetch("/static/data.json");
+      console.log(response);
+      const data = await response.json();
+      console.log("This is data", data)
+      this.klines = data.data.map((item) => ({
+        time: Math.floor(new Date(item.date).getTime() / 1000),
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      }));
+      this.xspan = data.data
+        .map((item) => Math.floor(new Date(item.date).getTime() / 1000))
+        .map((d, i, arr) => (i ? arr[i] - arr[i - 1] : 0))[2];
+      const prebars = [...new Array(100)].map((_, i) => ({
+        time: this.klines[0].time - (i + 1) * this.xspan,
+      }));
+      const postbars = [...new Array(100)].map((_, i) => ({
+        time: this.klines[this.klines.length - 1].time + (i + 1) * this.xspan,
+      }));
+      this.candleseries.setData([...prebars, ...this.klines, ...postbars]);
+    } catch (error) {
+      console.error("Error fetching or parsing data:", error);
+    }
+  }
 
-            // Initialize Gainers table
-            var gainersTable = new Tabulator("#gainers-table", {
-                layout: "fitColumns",
-                columns: [
-                    { title: "Symbol", field: "symbol" },
-                    { title: "Name", field: "name" },
-                    { title: "Price", field: "price" },
-                    { title: "Change", field: "change" },
-                    { title: "Percent Change", field: "percent_change" },
-                ],
-                data: gainersData,
-            });
+  handleChartClick(param) {
+    console.log("handleChartClick triggered");
+    if (this.isUpdatingLine) return;
+    if (this.isDragging) return;
+    const xTs = param.time
+      ? param.time
+      : this.klines[0]["time"] + param.logical * this.xspan;
+    const yPrice = this.candleseries.coordinateToPrice(param.point.y);
+    this.isHovered
+      ? this.startDrag(xTs, yPrice)
+      : this.handleLineDrawing(xTs, yPrice);
+  }
 
-            // Initialize Active Stocks table
-            var activeTable = new Tabulator("#active-table", {
-                layout: "fitColumns",
-                columns: [
-                    { title: "Symbol", field: "symbol" },
-                    { title: "Name", field: "name" },
-                    { title: "Price", field: "price" },
-                    { title: "Volume", field: "volume" },
-                ],
-                data: activeData,
-            });
+  handleCrosshairMove(param) {
+    if (this.isUpdatingLine) return;
+    const xTs = param.time
+      ? param.time
+      : this.klines[0]["time"] + param.logical * this.xspan;
+    const yPrice = this.candleseries.coordinateToPrice(param.point.y);
+    this.lastCrosshairPosition = { x: xTs, y: yPrice };
 
-            // Populate News list
-            var newsList = document.getElementById("news-list");
-            newsData.forEach(function(newsItem) {
-                var li = document.createElement("li");
-                var a = document.createElement("a");
-                a.href = newsItem.url;
-                a.target = "_blank";
-                a.textContent = newsItem.title;
-                var p = document.createElement("p");
-                p.textContent = newsItem.summary;
-                li.appendChild(a);
-                li.appendChild(p);
-                newsList.appendChild(li);
-            });
-        });
+    this.startPoint
+      ? this.updateLine(xTs, yPrice)
+      : this.handleHoverEffect(xTs, yPrice);
+
+    if (this.isDragging) {
+      const deltaX = xTs - this.dragStartPoint.x;
+      const deltaY = yPrice - this.dragStartPoint.y;
+
+      let newLineData;
+      newLineData = this.dragStartLineData.map((point, i) =>
+        this.selectedPoint !== null
+          ? i === this.selectedPoint
+            ? {
+                time: point.time + deltaX,
+                value: point.value + deltaY,
+              }
+            : point
+          : {
+              time: point.time + deltaX,
+              value: point.value + deltaY,
+            }
+      );
+
+      this.dragLine(newLineData);
+    }
+  }
+
+  handleMouseDown(e) {
+    if (!this.lastCrosshairPosition) return;
+    if (this.isHovered) {
+      this.startDrag(
+        this.lastCrosshairPosition.x,
+        this.lastCrosshairPosition.y
+      );
+    }
+  }
+
+  handleMouseUp() {
+    this.endDrag();
+  }
+
+  handleLineDrawing(xTs, yPrice) {
+    if (!this.startPoint) {
+      this.startPoint = { time: xTs, price: yPrice };
+    } else {
+      this.lineSeries.setData([
+        { time: this.startPoint.time, value: this.startPoint.price },
+        { time: xTs, value: yPrice },
+      ]);
+      this.startPoint = null;
+      this.selectedPoint = null;
+    }
+  }
+
+  handleHoverEffect(xTs, yPrice) {
+    const linedata = this.lineSeries.data();
+    if (!linedata.length) return;
+
+    const hoverStatus = this.isLineHovered(
+      xTs,
+      yPrice,
+      linedata[0],
+      linedata[1]
+    );
+    if (hoverStatus && !this.isHovered) {
+      this.startHover();
+    }
+
+    if (!hoverStatus && this.isHovered && !this.isDragging) {
+      this.endHover();
+    }
+  }
+
+  startHover() {
+    this.isHovered = true;
+    this.lineSeries.applyOptions({ color: "orange" });
+    this.domElement.style.cursor = "pointer";
+    this.chart.applyOptions({ handleScroll: false, handleScale: false });
+  }
+
+  endHover() {
+    this.isHovered = false;
+    this.lineSeries.applyOptions({ color: "dodgerblue" });
+    this.domElement.style.cursor = "default";
+    this.chart.applyOptions({ handleScroll: true, handleScale: true });
+  }
+
+  startDrag(xTs, yPrice) {
+    console.log("startDrag triggered");
+    this.isDragging = true;
+    this.dragStartPoint = { x: xTs, y: yPrice };
+    this.dragStartLineData = [...this.lineSeries.data()];
+  }
+
+  endDrag() {
+    console.log("endDrag triggered");
+    this.isDragging = false;
+    this.dragStartPoint = null;
+    this.dragStartLineData = null;
+    this.selectedPoint = null;
+  }
+
+  updateLine(xTs, yPrice) {
+    this.isUpdatingLine = true;
+    this.lineSeries.setData([
+      { time: this.startPoint.time, value: this.startPoint.price },
+      { time: xTs, value: yPrice },
+    ]);
+    this.selectedPoint = null;
+    this.isUpdatingLine = false;
+  }
+  dragLine(newCords) {
+    this.isUpdatingLine = true;
+    this.lineSeries.setData(newCords);
+    this.isUpdatingLine = false;
+  }
+
+  isLineHovered(xTs, yPrice, point1, point2) {
+    // CHECK IF POINT IS SELECTED
+    if (this.isDragging) return true;
+    const isPoint1 =
+      xTs === point1.time &&
+      (Math.abs(yPrice - point1.value) * 100) / yPrice < this.hoverThreshold;
+    if (isPoint1) {
+      this.selectedPoint = 0;
+      return true;
+    }
+    const isPoint2 =
+      xTs === point2.time &&
+      (Math.abs(yPrice - point2.value) * 100) / yPrice < this.hoverThreshold;
+    if (isPoint2) {
+      this.selectedPoint = 1;
+      return true;
+    }
+
+    this.selectedPoint = null;
+    const m = (point2.value - point1.value) / (point2.time - point1.time);
+    const c = point1.value - m * point1.time;
+    const estimatedY = m * xTs + c;
+    return (Math.abs(yPrice - estimatedY) * 100) / yPrice < this.hoverThreshold;
+  }
+}
+
+const manager = new ChartManager();
     </script>
-</body>
+  </body>
+
 </html>

@@ -15,50 +15,66 @@
 </head>
 <style>
  #gainers-table{
-    width: 500px;
+    width: 100%;
 }
 #active-table{
-    width: 500px;
+    width: 100%;
 }
 
 #news_table{
-    width: 500px;
+    width: 100%;
 }
+
+.chart-container {
+    width: 100%;
+    height: 90%; /* Adjust height as needed */
+}
+
 
 </style>
 <body class="bg-gray-400 text-gray-100 font-sans antialiased">
 
   
 
-    <main class="container p-6 flex ">
-        <section class=" flex-1">
-                <div>
-                <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Gainers</h3> -->
+    <main class=" p-2 flex h-screen">
+        <!-- First Section: Takes 1/4 of the space -->
+        <section class="w-1/4">
+            <div>
+                <!-- Gainers Table -->
                 <div id="gainers-table" class="mb-2"></div>
-                </div>
-
-                <div>
-                <!-- <h3 class="text-2xl font-semibold mb-4 text-gray-100">Active Stocks</h3> -->
+            </div>
+    
+            <div>
+                <!-- Active Stocks Table -->
                 <div id="active-table" class="mb-2"></div>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6 max-h-96 overflow-y-auto max-w-400" id="news_table">
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-100" id="news_title">News</h3>
-                    <ul id="news-container" class="list-disc pl-5 text-gray-300">
-                        <!-- News items will be inserted here -->
-                    </ul>
-                </div>
-                
-
+            </div>
+    
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6 max-h-96 overflow-y-auto max-w-400" id="news_table">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-100" id="news_title">News</h3>
+                <ul id="news-container" class="list-disc pl-5 text-gray-300">
+                    <!-- News items will be inserted here -->
+                </ul>
+            </div>
         </section>
-        <section class="flex-1">
-            <div id="chart-container" style="width: 100%; height: 500px;">
-                <!-- Chart will be rendered here -->
+    
+        <!-- Second Section: Takes 3/4 of the space -->
+        <section class="w-3/4 grid grid-cols-2 grid-rows-2 gap-4 ml-2 mr-2">
+            <div id="chart1" class="chart-container p-2">
+                <!-- 5-minute interval chart -->
+            </div>
+            <div id="chart2" class="chart-container p-2">
+                <!-- 1-minute interval chart -->
+            </div>
+            <div id="chart3" class="chart-container p-2">
+                <!-- 1-day interval chart -->
+            </div>
+            <div id="chart4" class="chart-container p-2">
+                <!-- 10-second interval chart -->
             </div>
         </section>
         
-
-        
     </main>
+    
 
     <!-- Include Tabulator JS from CDN -->
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
@@ -195,19 +211,72 @@
         }
 
 
-        <section class="flex-1">
-            <div id="chart-container" style="width: 100%; height: 500px;">
-                <!-- Chart will be rendered here -->
-            </div>
-        </section>
-
-
-
         
-    
-       
 
+
+      
 
     </script>
+    <script>
+        function createCandlestickChart(containerId, data) {
+            const chart = LightweightCharts.createChart(document.getElementById(containerId), {
+                width: document.getElementById(containerId).clientWidth,
+                height: document.getElementById(containerId).clientHeight,
+                layout: {
+                    backgroundColor: '#ffffff',
+                    textColor: '#000000',
+                },
+                grid: {
+                    vertLines: {
+                        color: '#e1e1e1',
+                    },
+                    horzLines: {
+                        color: '#e1e1e1',
+                    },
+                },
+            });
+    
+            const candlestickSeries = chart.addCandlestickSeries();
+            candlestickSeries.setData(data);
+    
+            window.addEventListener('resize', () => {
+                chart.resize(document.getElementById(containerId).clientWidth, document.getElementById(containerId).clientHeight);
+            });
+        }
+    
+        // Example candlestick data for different intervals
+        const data5m = [
+            { time: '2024-08-01T00:00:00Z', open: 100, high: 102, low: 98, close: 101 },
+            { time: '2024-08-01T00:05:00Z', open: 101, high: 103, low: 99, close: 102 },
+            // Add more 5-minute interval data
+        ];
+    
+        const data1m = [
+            { time: '2024-08-01T00:00:00Z', open: 100, high: 101, low: 99, close: 100 },
+            { time: '2024-08-01T00:01:00Z', open: 100, high: 102, low: 99, close: 101 },
+            // Add more 1-minute interval data
+        ];
+    
+        const data1d = [
+            { time: '2024-07-28', open: 100, high: 105, low: 98, close: 104 },
+            { time: '2024-07-29', open: 104, high: 108, low: 102, close: 106 },
+            // Add more 1-day interval data
+        ];
+    
+        const data10s = [
+            { time: '2024-08-01T00:00:00Z', open: 100, high: 101, low: 99, close: 100 },
+            { time: '2024-08-01T00:00:10Z', open: 100, high: 102, low: 98, close: 101 },
+            // Add more 10-second interval data
+        ];
+    
+        // Initialize the candlestick charts with different intervals
+        createCandlestickChart('chart1', data5m);   // 5-minute interval
+        createCandlestickChart('chart2', data1m);   // 1-minute interval
+        createCandlestickChart('chart3', data1d);   // 1-day interval
+        createCandlestickChart('chart4', data10s);  // 10-second interval
+    </script>
+    
+
+    
 </body>
 </html>
