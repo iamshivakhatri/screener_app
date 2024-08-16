@@ -223,7 +223,7 @@
       
 
     </script>
-    <script>
+     <script>
         function createCandlestickChart(containerId, data) {
             const chart = LightweightCharts.createChart(document.getElementById(containerId), {
                 width: document.getElementById(containerId).clientWidth,
@@ -249,37 +249,31 @@
                 chart.resize(document.getElementById(containerId).clientWidth, document.getElementById(containerId).clientHeight);
             });
         }
-    
-        // Example candlestick data for different intervals
-        const data5m = [
-            { time: '2024-08-01T00:00:00Z', open: 100, high: 102, low: 98, close: 101 },
-            { time: '2024-08-01T00:05:00Z', open: 101, high: 103, low: 99, close: 102 },
-            // Add more 5-minute interval data
-        ];
-    
-        const data1m = [
-            { time: '2024-08-01T00:00:00Z', open: 100, high: 101, low: 99, close: 100 },
-            { time: '2024-08-01T00:01:00Z', open: 100, high: 102, low: 99, close: 101 },
-            // Add more 1-minute interval data
-        ];
-    
-        const data1d = [
-            { time: '2024-07-28', open: 100, high: 105, low: 98, close: 104 },
-            { time: '2024-07-29', open: 104, high: 108, low: 102, close: 106 },
-            // Add more 1-day interval data
-        ];
-    
-        const data10s = [
-            { time: '2024-08-01T00:00:00Z', open: 100, high: 101, low: 99, close: 100 },
-            { time: '2024-08-01T00:00:10Z', open: 100, high: 102, low: 98, close: 101 },
-            // Add more 10-second interval data
-        ];
-    
-        // Initialize the candlestick charts with different intervals
-        createCandlestickChart('chart1', data5m);   // 5-minute interval
-        createCandlestickChart('chart2', data1m);   // 1-minute interval
-        createCandlestickChart('chart3', data1d);   // 1-day interval
-        createCandlestickChart('chart4', data10s);  // 10-second interval
+
+        // Function to convert JSON data to LightweightCharts format
+        function convertToCandlestickData(rawData) {
+            return rawData.map(item => ({
+                time: Math.floor(item.date / 1000), // Convert milliseconds to seconds for Unix timestamp
+                open: item.open,
+                high: item.high,
+                low: item.low,
+                close: item.close,
+            }));
+        }
+
+        // Fetch data from JSON file and initialize charts
+        fetch('static/data.json')
+            .then(response => response.json())
+            .then(rawData => {
+                const candlestickData = convertToCandlestickData(rawData);
+
+                // You can duplicate this line for different charts if the data format changes based on time intervals
+                createCandlestickChart('chart1', candlestickData);   // Example chart with converted data
+                createCandlestickChart('chart2', candlestickData);   // Example for second chart
+                createCandlestickChart('chart3', candlestickData);   // Example for third chart
+                createCandlestickChart('chart4', candlestickData);   // Example for fourth chart
+            })
+            .catch(error => console.error('Error loading the JSON data:', error));
     </script>
     
    
