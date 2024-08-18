@@ -2,10 +2,80 @@
 <html lang="en">
   <head>
     <style>
+      /* Basic reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to right, #1f4037, #99f2c8);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
       #tvchart {
-        position: absolute;
-        width: 95vw;
-        height: 95vh;
+        width: 90vw;
+        height: 80vh;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      nav {
+        background: rgba(0, 0, 0, 0.6);
+        width: 100vw;
+        padding: 1rem 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 50px;
+      }
+
+      nav h1 {
+        color: #f2f2f2;
+        font-size: 1.5rem;
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+      }
+
+      nav ul li {
+        display: inline;
+      }
+
+      nav ul li a {
+        color: #f2f2f2;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: color 0.3s ease;
+      }
+
+      nav ul li a:hover {
+        color: #99f2c8;
+      }
+
+      footer {
+        margin-top: 20px;
+        color: #f2f2f2;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
       }
     </style>
     <meta charset="UTF-8" />
@@ -13,260 +83,254 @@
     <title>TrendLines</title>
   </head>
   <body>
-    <div class="m-auto">
-      <div id="tvchart" w="3/4" >
-      </div>
-    </div>
-    
-   
+    <!-- Navigation bar -->
+    <nav>
+      <h1>TrendLines</h1>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Chart</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- Chart Container -->
+    <div id="tvchart"></div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2024 TrendLines Inc. All Rights Reserved.</p>
+    </footer>
 
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
     <script>
-        class ChartManager {
-  constructor() {
-    this.chart = null;
-    this.xspan = null;
-    this.klines = null;
-    this.startPoint = null;
-    this.lineSeries = null;
-    this.isUpdatingLine = false;
-    this.isHovered = false;
-    this.isDragging = false;
-    this.dragStartPoint = null;
-    this.dragStartLineData = null;
-    this.lastCrosshairPosition = null;
-    this.candleseries = null;
-    this.selectedPoint = null; //null/0/1
-    this.hoverThreshold = 0.01;
-    this.domElement = document.getElementById("tvchart");
-    this.initializeChart();
-    this.subscribeToEvents();
-    this.loadData();
-  }
+      class ChartManager {
+        constructor() {
+          this.chart = null;
+          this.xspan = null;
+          this.klines = null;
+          this.startPoint = null;
+          this.lineSeries = null;
+          this.isUpdatingLine = false;
+          this.isHovered = false;
+          this.isDragging = false;
+          this.dragStartPoint = null;
+          this.dragStartLineData = null;
+          this.lastCrosshairPosition = null;
+          this.candleseries = null;
+          this.selectedPoint = null; // null/0/1
+          this.hoverThreshold = 0.01;
+          this.domElement = document.getElementById("tvchart");
+          this.initializeChart();
+          this.subscribeToEvents();
+          this.loadData();
+        }
 
-  initializeChart() {
-    const chartProperties = {
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: true,
-      },
-      crosshair: {
-        mode: LightweightCharts.CrosshairMode.Normal,
-      },
-    };
-    this.chart = LightweightCharts.createChart(
-      this.domElement,
-      chartProperties
-    );
-    this.candleseries = this.chart.addCandlestickSeries();
-    this.lineSeries = this.chart.addLineSeries();
-  }
+        initializeChart() {
+          const chartProperties = {
+            timeScale: {
+              timeVisible: true,
+              secondsVisible: true,
+            },
+            crosshair: {
+              mode: LightweightCharts.CrosshairMode.Normal,
+            },
+          };
+          this.chart = LightweightCharts.createChart(
+            this.domElement,
+            chartProperties
+          );
+          this.candleseries = this.chart.addCandlestickSeries();
+          this.lineSeries = this.chart.addLineSeries();
+        }
 
-  subscribeToEvents() {
-    this.chart.subscribeClick(this.handleChartClick.bind(this));
-    this.chart.subscribeCrosshairMove(this.handleCrosshairMove.bind(this));
-    this.domElement.addEventListener(
-      "mousedown",
-      this.handleMouseDown.bind(this)
-    );
-    this.domElement.addEventListener("mouseup", this.handleMouseUp.bind(this));
-  }
-  
-  async loadData() {
-    try {
-      const response = await fetch("/static/data.json");
-      console.log(response);
-      const data = await response.json();
-      console.log("This is data", data)
-      this.klines = data.data.map((item) => ({
-        time: Math.floor(new Date(item.date).getTime() / 1000),
-        open: item.open,
-        high: item.high,
-        low: item.low,
-        close: item.close,
-      }));
-      this.xspan = data.data
-        .map((item) => Math.floor(new Date(item.date).getTime() / 1000))
-        .map((d, i, arr) => (i ? arr[i] - arr[i - 1] : 0))[2];
-      const prebars = [...new Array(100)].map((_, i) => ({
-        time: this.klines[0].time - (i + 1) * this.xspan,
-      }));
-      const postbars = [...new Array(100)].map((_, i) => ({
-        time: this.klines[this.klines.length - 1].time + (i + 1) * this.xspan,
-      }));
-      this.candleseries.setData([...prebars, ...this.klines, ...postbars]);
-    } catch (error) {
-      console.error("Error fetching or parsing data:", error);
-    }
-  }
+        subscribeToEvents() {
+          this.chart.subscribeClick(this.handleChartClick.bind(this));
+          this.chart.subscribeCrosshairMove(this.handleCrosshairMove.bind(this));
+          this.domElement.addEventListener(
+            "mousedown",
+            this.handleMouseDown.bind(this)
+          );
+          this.domElement.addEventListener(
+            "mouseup",
+            this.handleMouseUp.bind(this)
+          );
+        }
 
-  handleChartClick(param) {
-    console.log("handleChartClick triggered");
-    if (this.isUpdatingLine) return;
-    if (this.isDragging) return;
-    const xTs = param.time
-      ? param.time
-      : this.klines[0]["time"] + param.logical * this.xspan;
-    const yPrice = this.candleseries.coordinateToPrice(param.point.y);
-    this.isHovered
-      ? this.startDrag(xTs, yPrice)
-      : this.handleLineDrawing(xTs, yPrice);
-  }
+        async loadData() {
+          try {
+            const response = await fetch("/static/data.json");
+            const data = await response.json();
+            this.klines = data.data.map((item) => ({
+              time: Math.floor(new Date(item.date).getTime() / 1000),
+              open: item.open,
+              high: item.high,
+              low: item.low,
+              close: item.close,
+            }));
+            this.xspan = data.data
+              .map((item) => Math.floor(new Date(item.date).getTime() / 1000))
+              .map((d, i, arr) => (i ? arr[i] - arr[i - 1] : 0))[2];
+            const prebars = [...new Array(100)].map((_, i) => ({
+              time: this.klines[0].time - (i + 1) * this.xspan,
+            }));
+            const postbars = [...new Array(100)].map((_, i) => ({
+              time: this.klines[this.klines.length - 1].time + (i + 1) * this.xspan,
+            }));
+            this.candleseries.setData([...prebars, ...this.klines, ...postbars]);
+          } catch (error) {
+            console.error("Error fetching or parsing data:", error);
+          }
+        }
 
-  handleCrosshairMove(param) {
-    if (this.isUpdatingLine) return;
-    const xTs = param.time
-      ? param.time
-      : this.klines[0]["time"] + param.logical * this.xspan;
-    const yPrice = this.candleseries.coordinateToPrice(param.point.y);
-    this.lastCrosshairPosition = { x: xTs, y: yPrice };
+        handleChartClick(param) {
+          if (this.isUpdatingLine || this.isDragging) return;
+          const xTs = param.time
+            ? param.time
+            : this.klines[0]["time"] + param.logical * this.xspan;
+          const yPrice = this.candleseries.coordinateToPrice(param.point.y);
+          this.isHovered
+            ? this.startDrag(xTs, yPrice)
+            : this.handleLineDrawing(xTs, yPrice);
+        }
 
-    this.startPoint
-      ? this.updateLine(xTs, yPrice)
-      : this.handleHoverEffect(xTs, yPrice);
+        handleCrosshairMove(param) {
+          if (this.isUpdatingLine) return;
+          const xTs = param.time
+            ? param.time
+            : this.klines[0]["time"] + param.logical * this.xspan;
+          const yPrice = this.candleseries.coordinateToPrice(param.point.y);
+          this.lastCrosshairPosition = { x: xTs, y: yPrice };
 
-    if (this.isDragging) {
-      const deltaX = xTs - this.dragStartPoint.x;
-      const deltaY = yPrice - this.dragStartPoint.y;
+          this.startPoint
+            ? this.updateLine(xTs, yPrice)
+            : this.handleHoverEffect(xTs, yPrice);
 
-      let newLineData;
-      newLineData = this.dragStartLineData.map((point, i) =>
-        this.selectedPoint !== null
-          ? i === this.selectedPoint
-            ? {
-                time: point.time + deltaX,
-                value: point.value + deltaY,
-              }
-            : point
-          : {
-              time: point.time + deltaX,
-              value: point.value + deltaY,
-            }
-      );
+          if (this.isDragging) {
+            const deltaX = xTs - this.dragStartPoint.x;
+            const deltaY = yPrice - this.dragStartPoint.y;
 
-      this.dragLine(newLineData);
-    }
-  }
+            let newLineData = this.dragStartLineData.map((point, i) =>
+              this.selectedPoint !== null
+                ? i === this.selectedPoint
+                  ? {
+                      time: point.time + deltaX,
+                      value: point.value + deltaY,
+                    }
+                  : point
+                : {
+                    time: point.time + deltaX,
+                    value: point.value + deltaY,
+                  }
+            );
 
-  handleMouseDown(e) {
-    if (!this.lastCrosshairPosition) return;
-    if (this.isHovered) {
-      this.startDrag(
-        this.lastCrosshairPosition.x,
-        this.lastCrosshairPosition.y
-      );
-    }
-  }
+            this.dragLine(newLineData);
+          }
+        }
 
-  handleMouseUp() {
-    this.endDrag();
-  }
+        handleMouseDown() {
+          if (!this.lastCrosshairPosition) return;
+          if (this.isHovered) {
+            this.startDrag(
+              this.lastCrosshairPosition.x,
+              this.lastCrosshairPosition.y
+            );
+          }
+        }
 
-  handleLineDrawing(xTs, yPrice) {
-    if (!this.startPoint) {
-      this.startPoint = { time: xTs, price: yPrice };
-    } else {
-      this.lineSeries.setData([
-        { time: this.startPoint.time, value: this.startPoint.price },
-        { time: xTs, value: yPrice },
-      ]);
-      this.startPoint = null;
-      this.selectedPoint = null;
-    }
-  }
+        handleMouseUp() {
+          this.endDrag();
+        }
 
-  handleHoverEffect(xTs, yPrice) {
-    const linedata = this.lineSeries.data();
-    if (!linedata.length) return;
+        handleLineDrawing(xTs, yPrice) {
+          if (!this.startPoint) {
+            this.startPoint = { time: xTs, price: yPrice };
+          } else {
+            this.lineSeries.setData([
+              { time: this.startPoint.time, value: this.startPoint.price },
+              { time: xTs, value: yPrice },
+            ]);
+            this.startPoint = null;
+            this.selectedPoint = null;
+          }
+        }
 
-    const hoverStatus = this.isLineHovered(
-      xTs,
-      yPrice,
-      linedata[0],
-      linedata[1]
-    );
-    if (hoverStatus && !this.isHovered) {
-      this.startHover();
-    }
+        handleHoverEffect(xTs, yPrice) {
+          const linedata = this.lineSeries.data();
+          if (!linedata.length) return;
 
-    if (!hoverStatus && this.isHovered && !this.isDragging) {
-      this.endHover();
-    }
-  }
+          const hoverStatus = this.isLineHovered(
+            xTs,
+            yPrice,
+            linedata[0],
+            linedata[1]
+          );
+          if (hoverStatus && !this.isHovered) {
+            this.startHover();
+          }
 
-  startHover() {
-    this.isHovered = true;
-    this.lineSeries.applyOptions({ color: "orange" });
-    this.domElement.style.cursor = "pointer";
-    this.chart.applyOptions({ handleScroll: false, handleScale: false });
-  }
+          if (!hoverStatus && this.isHovered && !this.isDragging) {
+            this.endHover();
+          }
+        }
 
-  endHover() {
-    this.isHovered = false;
-    this.lineSeries.applyOptions({ color: "dodgerblue" });
-    this.domElement.style.cursor = "default";
-    this.chart.applyOptions({ handleScroll: true, handleScale: true });
-  }
+        startHover() {
+          this.isHovered = true;
+          this.lineSeries.applyOptions({ color: "orange" });
+          this.domElement.style.cursor = "pointer";
+          this.chart.applyOptions({ handleScroll: false, handleScale: false });
+        }
 
-  startDrag(xTs, yPrice) {
-    console.log("startDrag triggered");
-    this.isDragging = true;
-    this.dragStartPoint = { x: xTs, y: yPrice };
-    this.dragStartLineData = [...this.lineSeries.data()];
-  }
+        endHover() {
+          this.isHovered = false;
+          this.lineSeries.applyOptions({ color: "dodgerblue" });
+          this.domElement.style.cursor = "default";
+          this.chart.applyOptions({ handleScroll: true, handleScale: true });
+        }
 
-  endDrag() {
-    console.log("endDrag triggered");
-    this.isDragging = false;
-    this.dragStartPoint = null;
-    this.dragStartLineData = null;
-    this.selectedPoint = null;
-  }
+        startDrag(xTs, yPrice) {
+          this.isDragging = true;
+          this.dragStartPoint = { x: xTs, y: yPrice };
+          this.dragStartLineData = this.lineSeries.data();
+          this.domElement.style.cursor = "grabbing";
+        }
 
-  updateLine(xTs, yPrice) {
-    this.isUpdatingLine = true;
-    this.lineSeries.setData([
-      { time: this.startPoint.time, value: this.startPoint.price },
-      { time: xTs, value: yPrice },
-    ]);
-    this.selectedPoint = null;
-    this.isUpdatingLine = false;
-  }
-  dragLine(newCords) {
-    this.isUpdatingLine = true;
-    this.lineSeries.setData(newCords);
-    this.isUpdatingLine = false;
-  }
+        dragLine(newLineData) {
+          this.lineSeries.setData(newLineData);
+        }
 
-  isLineHovered(xTs, yPrice, point1, point2) {
-    // CHECK IF POINT IS SELECTED
-    if (this.isDragging) return true;
-    const isPoint1 =
-      xTs === point1.time &&
-      (Math.abs(yPrice - point1.value) * 100) / yPrice < this.hoverThreshold;
-    if (isPoint1) {
-      this.selectedPoint = 0;
-      return true;
-    }
-    const isPoint2 =
-      xTs === point2.time &&
-      (Math.abs(yPrice - point2.value) * 100) / yPrice < this.hoverThreshold;
-    if (isPoint2) {
-      this.selectedPoint = 1;
-      return true;
-    }
+        endDrag() {
+          this.isDragging = false;
+          this.dragStartPoint = null;
+          this.domElement.style.cursor = "pointer";
+        }
 
-    this.selectedPoint = null;
-    const m = (point2.value - point1.value) / (point2.time - point1.time);
-    const c = point1.value - m * point1.time;
-    const estimatedY = m * xTs + c;
-    return (Math.abs(yPrice - estimatedY) * 100) / yPrice < this.hoverThreshold;
-  }
-}
+        updateLine(xTs, yPrice) {
+          const startTime = this.startPoint.time;
+          const startPrice = this.startPoint.price;
+          this.lineSeries.setData([
+            { time: startTime, value: startPrice },
+            { time: xTs, value: yPrice },
+          ]);
+        }
 
-const manager = new ChartManager();
+        isLineHovered(xTs, yPrice, start, end) {
+          const lineLength = Math.sqrt(
+            Math.pow(end.time - start.time, 2) +
+              Math.pow(end.value - start.value, 2)
+          );
+          const hoverThresholdPixels =
+            this.hoverThreshold * lineLength * this.xspan;
+          const a = end.value - start.value;
+          const b = -(end.time - start.time);
+          const c =
+            -(a * start.time + b * start.value + yPrice * b + xTs * a) /
+            Math.sqrt(a ** 2 + b ** 2);
+          return Math.abs(c) <= hoverThresholdPixels;
+        }
+      }
+
+      const chartManager = new ChartManager();
     </script>
   </body>
-
 </html>
