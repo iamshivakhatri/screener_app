@@ -97,9 +97,9 @@ def index():
 
 
 
-# @app.route('/try_page')
-# def try_page():
-#     return render_template('try.html')
+@app.route('/try_page')
+def try_page():
+    return render_template('try.html')
 
 
 

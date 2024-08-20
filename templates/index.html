@@ -217,13 +217,8 @@
         }
 
 
-        
-
-
-      
-
     </script>
-     <script>
+    <script>
         function createCandlestickChart(containerId, data) {
             const chart = LightweightCharts.createChart(document.getElementById(containerId), {
                 width: document.getElementById(containerId).clientWidth,
@@ -249,32 +244,56 @@
                 chart.resize(document.getElementById(containerId).clientWidth, document.getElementById(containerId).clientHeight);
             });
         }
-
-        // Function to convert JSON data to LightweightCharts format
+    
         function convertToCandlestickData(rawData) {
             return rawData.map(item => ({
-                time: Math.floor(item.date / 1000), // Convert milliseconds to seconds for Unix timestamp
+                time: Math.floor(item.date / 1000),
                 open: item.open,
                 high: item.high,
                 low: item.low,
                 close: item.close,
             }));
         }
-
-        // Fetch data from JSON file and initialize charts
-        fetch('static/data.json')
-            .then(response => response.json())
-            .then(rawData => {
-                const candlestickData = convertToCandlestickData(rawData);
-
-                // You can duplicate this line for different charts if the data format changes based on time intervals
-                createCandlestickChart('chart1', candlestickData);   // Example chart with converted data
-                createCandlestickChart('chart2', candlestickData);   // Example for second chart
-                createCandlestickChart('chart3', candlestickData);   // Example for third chart
-                createCandlestickChart('chart4', candlestickData);   // Example for fourth chart
-            })
-            .catch(error => console.error('Error loading the JSON data:', error));
+    
+        function loadDataAndCreateCharts() {
+            // Fetching data for each interval and creating corresponding charts
+            fetch('static/data.json')
+                .then(response => response.json())
+                .then(rawData => {
+                    const candlestickData = convertToCandlestickData(rawData);
+                    createCandlestickChart('chart1', candlestickData); // 1-Minute Chart
+                })
+                .catch(error => console.error('Error loading 1-minute data:', error));
+    
+            fetch('static/data-5min.json')
+                .then(response => response.json())
+                .then(rawData => {
+                    const candlestickData = convertToCandlestickData(rawData);
+                    createCandlestickChart('chart2', candlestickData); // 5-Minute Chart
+                })
+                .catch(error => console.error('Error loading 5-minute data:', error));
+    
+            fetch('static/data-15min.json')
+                .then(response => response.json())
+                .then(rawData => {
+                    const candlestickData = convertToCandlestickData(rawData);
+                    createCandlestickChart('chart3', candlestickData); // 15-Minute Chart
+                })
+                .catch(error => console.error('Error loading 15-minute data:', error));
+    
+            fetch('static/data-30min.json')
+                .then(response => response.json())
+                .then(rawData => {
+                    const candlestickData = convertToCandlestickData(rawData);
+                    createCandlestickChart('chart4', candlestickData); // 30-Minute Chart
+                })
+                .catch(error => console.error('Error loading 30-minute data:', error));
+        }
+    
+        loadDataAndCreateCharts();
     </script>
+    
+    
     
    
     
