@@ -85,23 +85,39 @@
   <body>
     <!-- Navigation bar -->
     <nav>
-      <h1>Trend</h1>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Chart</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
+        <h1>Trend</h1>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Chart</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
     </nav>
 
-    <!-- Chart Container -->
-    <div id="tvchart"></div>
+    <!-- Sidebar for additional information or navigation -->
+    <aside>
+        <h2>Stock Details</h2>
+        <p><strong>Symbol:</strong> HYPSTK</p>
+        <p><strong>Current Price:</strong> $0.5110</p>
+        <p><strong>Volume:</strong> 120,000</p>
+        <p><strong>Market Cap:</strong> $1.2B</p>
+    </aside>
+
+    <!-- Chart Container with interval toggle -->
+    <div id="chart-section">
+        <div id="interval-toggle">
+            <button onclick="switchInterval('1min')">1 Min</button>
+            <button onclick="switchInterval('5min')">5 Min</button>
+            <button onclick="switchInterval('15min')">15 Min</button>
+            <button onclick="switchInterval('30min')">30 Min</button>
+        </div>
+        <div id="tvchart"></div>
+    </div>
 
     <!-- Footer -->
     <footer>
-      <p>&copy; 2024 TrendLines Inc. All Rights Reserved.</p>
+        <p>&copy; 2024 TrendLines Inc. All Rights Reserved.</p>
     </footer>
-
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script>
      class ChartManager {
