@@ -1,58 +1,47 @@
-from alpha_vantage.timeseries import TimeSeries
 import requests
-import yfinance as yf
+from dotenv import load_dotenv
+import os
 
-def fetch_stock_data(symbol):
-    stock = yf.Ticker(symbol)
-    data = stock.history(period='5d')  # Fetch last 2 days of data
-    return data
+# Load API credentials from .env file
+load_dotenv()
 
-def screen_by_volume_increase(tickers):
-    volume_data = []
-    for ticker in tickers:
-        try:
-            print(f"Fetching data for {ticker} ***")
-            data = fetch_stock_data(ticker)
-            current_volume = data['Volume'].iloc[-1]
-            average_volume = data['Volume'].mean()
-            relative_volume = current_volume / average_volume
-            print(f"Downloaded data for {ticker}: {current_volume}, {average_volume}, {relative_volume}")
-            volume_data.append((ticker, current_volume, relative_volume))
-            
-        except Exception as e:
-            print(f"Error fetching data for {ticker}: {e}")
-    sorted_volume_data = sorted(volume_data, key=lambda x: x[2], reverse=True)
-    return sorted_volume_data[:10]
+API_KEY = os.environ.get("API_KEY")
+API_SECRET = os.environ.get("API_SECRET")
 
-def get_all_tickers(api_key):
-    # Define the Alpha Vantage endpoint for the symbol search
-    url = f"https://www.alphavantage.co/query?function=LISTING_STATUS&apikey={api_key}"
-    
-    # Make the request to the API
-    response = requests.get(url)
-    
-    # Check if the request was successful
-    if response.status_code != 200:
-        raise Exception("Error fetching data from Alpha Vantage API")
-    
-    # Parse the response content
-    tickers = response.text.split('\n')
-    ticker_list = [line.split(',')[0] for line in tickers[1:] if line]  # Skip header and empty lines
-    
-    return ticker_list
+print("API Key:", API_KEY)
+print("API Secret:", API_SECRET)
 
-# Replace 'YOUR_API_KEY' with your actual Alpha Vantage API key
-api_key = 'YOUR_API_KEY'
-tickers = get_all_tickers(api_key)
+# The base URL for the Alpaca data API
+BASE_URL = 'https://data.alpaca.markets/v2/stocks'
 
-# Print the first 10 tickers as an example
-print(tickers[:100])
-print(len(tickers))
+# The stock symbol you want to fetch data for
+SYMBOL = 'AAPL'
 
+# The timeframe for the bars ('1Min', '5Min', '15Min', 'day')
+TIMEFRAME = '1Min'
 
-volume_increase_stocks = screen_by_volume_increase(tickers)
+# The number of bars you want to retrieve
+LIMIT = 10000
 
-# Print the top 10 stocks by volume increase
-print("Top 10 Stocks by Volume Increase:")
-for stock in volume_increase_stocks[:10]:
-    print(stock)
+# The endpoint URL with the necessary parameters
+url = f"{BASE_URL}/{SYMBOL}/bars?timeframe={TIMEFRAME}&limit={LIMIT}"
+
+# The headers for authentication
+headers = {
+    'APCA-API-KEY-ID': API_KEY,
+    'APCA-API-SECRET-KEY': API_SECRET
+}
+
+# Make the API request
+response = requests.get(url, headers=headers)
+
+print("This is response:", response)
+
+# Check if the request was successful
+if response.status_code == 200:
+    data = response.json()
+    print(f"Data for {SYMBOL} ({TIMEFRAME} timeframe):")
+    for bar in data['bars']:
+        print(f"Time: {bar['t']}, Open: {bar['o']}, High: {bar['h']}, Low: {bar['l']}, Close: {bar['c']}, Volume: {bar['v']}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")

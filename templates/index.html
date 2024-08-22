@@ -219,77 +219,54 @@
 
     </script>
     <script>
-        function createCandlestickChart(containerId, data) {
-            const chart = LightweightCharts.createChart(document.getElementById(containerId), {
-                width: document.getElementById(containerId).clientWidth,
-                height: document.getElementById(containerId).clientHeight,
-                layout: {
-                    backgroundColor: '#ffffff',
-                    textColor: '#000000',
-                },
-                grid: {
-                    vertLines: {
-                        color: '#e1e1e1',
-                    },
-                    horzLines: {
-                        color: '#e1e1e1',
-                    },
-                },
+        async function getCandlestickData(symbol, timeframe, limit = 100) {
+            const apiKey = "PK2XO9N6WHJPS8B0V0E2";
+            const apiSecret = "8QT4Jhd3tYCfGosYjmJSbicKQjGfeb3ZmkXaYum2";
+            const endpoint = `https://data.alpaca.markets/v1/bars/${timeframe}?symbols=${symbol}&limit=${limit}`;
+
+            const response = await fetch(endpoint, {
+                method: 'GET',
+                headers: {
+                    'APCA-API-KEY-ID': apiKey,
+                    'APCA-API-SECRET-KEY': apiSecret,
+                }
             });
-    
-            const candlestickSeries = chart.addCandlestickSeries();
-            candlestickSeries.setData(data);
-    
-            window.addEventListener('resize', () => {
-                chart.resize(document.getElementById(containerId).clientWidth, document.getElementById(containerId).clientHeight);
-            });
-        }
-    
-        function convertToCandlestickData(rawData) {
-            return rawData.map(item => ({
-                time: Math.floor(item.date / 1000),
-                open: item.open,
-                high: item.high,
-                low: item.low,
-                close: item.close,
+
+            if (!response.ok) {
+                console.error('Error fetching data:', response.statusText);
+                return [];
+            }
+
+            const data = await response.json();
+            return data[symbol].map(bar => ({
+                time: bar.t,
+                open: bar.o,
+                high: bar.h,
+                low: bar.l,
+                close: bar.c,
             }));
         }
-    
-        function loadDataAndCreateCharts() {
-            // Fetching data for each interval and creating corresponding charts
-            fetch('static/data.json')
-                .then(response => response.json())
-                .then(rawData => {
-                    const candlestickData = convertToCandlestickData(rawData);
-                    createCandlestickChart('chart1', candlestickData); // 1-Minute Chart
-                })
-                .catch(error => console.error('Error loading 1-minute data:', error));
-    
-            fetch('static/data-5min.json')
-                .then(response => response.json())
-                .then(rawData => {
-                    const candlestickData = convertToCandlestickData(rawData);
-                    createCandlestickChart('chart2', candlestickData); // 5-Minute Chart
-                })
-                .catch(error => console.error('Error loading 5-minute data:', error));
-    
-            fetch('static/data-15min.json')
-                .then(response => response.json())
-                .then(rawData => {
-                    const candlestickData = convertToCandlestickData(rawData);
-                    createCandlestickChart('chart3', candlestickData); // 15-Minute Chart
-                })
-                .catch(error => console.error('Error loading 15-minute data:', error));
-    
-            fetch('static/data-30min.json')
-                .then(response => response.json())
-                .then(rawData => {
-                    const candlestickData = convertToCandlestickData(rawData);
-                    createCandlestickChart('chart4', candlestickData); // 30-Minute Chart
-                })
-                .catch(error => console.error('Error loading 30-minute data:', error));
+
+        function createCandlestickChart(containerId, candlestickData) {
+            const chart = LightweightCharts.createChart(document.getElementById(containerId), {
+                width: 600,
+                height: 300,
+            });
+            const candlestickSeries = chart.addCandlestickSeries();
+            candlestickSeries.setData(candlestickData);
         }
-    
+
+        async function loadDataAndCreateCharts() {
+            const symbol = 'AAPL';
+            const intervals = ['1Min', '5Min', '15Min', '30Min'];
+
+            for (let i = 0; i < intervals.length; i++) {
+                const candlestickData = await getCandlestickData(symbol, intervals[i]);
+                console.log(`Loaded ${candlestickData.length} data points for ${intervals[i]} interval`);
+                createCandlestickChart(`chart${i + 1}`, candlestickData);
+            }
+        }
+
         loadDataAndCreateCharts();
     </script>
     
