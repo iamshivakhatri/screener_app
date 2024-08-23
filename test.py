@@ -1,8 +1,13 @@
 import requests
 import matplotlib.pyplot as plt
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Your API key here
+api_key = os.getenv('twelve_api')
 
 # API endpoint
 url = 'https://api.twelvedata.com/time_series'
@@ -10,8 +15,8 @@ url = 'https://api.twelvedata.com/time_series'
 # Parameters for the API request
 params = {
     'apikey': api_key,
-    'interval': '1min',     # 1-minute interval
-    'symbol': 'TSLA,AAPL',
+    'interval': '1h',     # 1-minute interval
+    'symbol': 'TSLA',
     'outputsize': 1000       # Number of data points to retrieve (up to 1000)
 }
 
@@ -22,7 +27,7 @@ response = requests.get(url, params=params)
 if response.status_code == 200:
     data = response.json()
     print(json.dumps(data, indent=2))
-    with open("test.json", "w") as f:
+    with open("1hour.json", "w") as f:
         f.write(json.dumps(data, indent=2))
 
 #     # Check if data is available

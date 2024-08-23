@@ -39,16 +39,17 @@
             </div>
         </section>
         <section class="w-3/4 grid grid-cols-2 grid-rows-2 gap-4 ml-2 mr-2">
-            <h3>5 minute interval</h3>
+            
             <div id="chart1" class="chart-container p-2">
+                <h3>5 minute interval</h3>
                 <!-- 5-minute interval chart -->
             </div>
             <div id="chart2" class="chart-container p-2">
-                <h3>1 minute interval</h3>
+                <h3>1 day interval</h3>
                 <!-- 1-minute interval chart -->
             </div>
             <div id="chart3" class="chart-container p-2">
-                <h3>1 day interval</h3>
+                <h3>1 minute interval</h3>
                 <!-- 1-day interval chart -->
             </div>
             <div id="chart4" class="chart-container p-2">
@@ -143,61 +144,68 @@
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <script>
   class CandlestickChart {
-    constructor(containerId) {
-      this.containerId = containerId;
-      this.chart = null;
-      this.candlestickSeries = null;
-      this.startPoint = null;
-      this.isDragging = false;
-      this.dragStartPoint = null;
-      this.dragStartLineData = null;
-      this.selectedPoint = null;
+    constructor(containerId, interval) {
+        this.containerId = containerId;
+        this.interval = interval; // Interval (1min, 5min, 1hour, 1day)
+        this.chart = null;
+        this.candlestickSeries = null;
     }
 
     async fetchData() {
-      try {
-        const response = await fetch("/static/test.json");
-        if (!response.ok) {
-          console.error('Error fetching data:', response.statusText);
-          return [];
+        try {
+            const response = await fetch(`/static/${this.interval}.json`);
+            console.log("name ", `/static/${this.interval}.json`);
+            if (!response.ok) {
+                console.error('Error fetching data:', response.statusText);
+                return [];
+            }
+            const data = await response.json();
+            console.log("Data", data);
+            console.log("Data.TSLA", data.TSLA.values);
+            return data.TSLA.values; // Adjust the key if needed
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
         }
-        const data = await response.json();
-        return data['TSLA'].values; // Adjust the key if needed
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        return [];
-      }
     }
 
     mapDataToChartFormat(dataValues) {
-        return dataValues.map(bar => ({
-            time: new Date(bar.datetime).getTime() / 1000, // Convert to UNIX timestamp
-            open: parseFloat(bar.open),
-            high: parseFloat(bar.high),
-            low: parseFloat(bar.low),
-            close: parseFloat(bar.close),
-        })).filter(bar => bar.open !== null && bar.high !== null && bar.low !== null && bar.close !== null); // Filter out any null values
-        }
+        return dataValues.map(item => {
+            // Create a Date object from the datetime string with 'UTC' timezone
+            const date = new Date(item.datetime + ' UTC');
 
+            // Convert to Unix timestamp in seconds
+            const timestampInSeconds = Math.floor(date.getTime() / 1000);
 
-        createChart() {
+            return {
+                time: timestampInSeconds, // Use the Unix timestamp
+                open: parseFloat(item.open),
+                high: parseFloat(item.high),
+                low: parseFloat(item.low),
+                close: parseFloat(item.close),
+            };
+        }).reverse(); // Reverse the array to place the latest data at the end
+    }
+
+    createChart() {
         this.chart = LightweightCharts.createChart(document.getElementById(this.containerId), {
             width: document.getElementById(this.containerId).offsetWidth,
             height: document.getElementById(this.containerId).offsetHeight,
             timeScale: {
-            timeVisible: true,
-            secondsVisible: true,
+                timeVisible: true,
+                secondsVisible: true,
             },
             crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
+                mode: LightweightCharts.CrosshairMode.Normal,
             },
         });
 
         this.candlestickSeries = this.chart.addCandlestickSeries();
-        }
-        
+    }
+
     async loadDataAndCreateChart() {
         const dataValues = await this.fetchData();
+        console.log("DataValues", dataValues);
         const candlestickData = this.mapDataToChartFormat(dataValues);
 
         if (candlestickData.length === 0) {
@@ -206,16 +214,20 @@
         }
 
         this.createChart();
-        console.log("Candlestickdata", candlestickData);
+        console.log("CandlestickData", candlestickData);
         this.candlestickSeries.setData(candlestickData);
-        // this.setupChartInteractions();
-        }
-  }
+    }
+}
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const chart = new CandlestickChart('chart1');
-    chart.loadDataAndCreateChart();
-  });
+document.addEventListener('DOMContentLoaded', () => {
+    // Create and load charts for different intervals
+    const intervals = ['1min', '5min', '1hour', '1day'];
+    intervals.forEach(interval => {
+        const chart = new CandlestickChart(`chart${interval === '1min' ? 1 : interval === '5min' ? 2 : interval === '1hour' ? 3 : 4}`, interval);
+        chart.loadDataAndCreateChart();
+    });
+});
+
 </script>
 
  
