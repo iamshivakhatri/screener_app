@@ -12,43 +12,25 @@
 
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
+    <style>
+        #gainers-table, #active-table, #news_table {
+            width: 100%;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px; /* Fixed height for testing */
+        }
+    </style>
 </head>
-<style>
- #gainers-table{
-    width: 100%;
-}
-#active-table{
-    width: 100%;
-}
-
-#news_table{
-    width: 100%;
-}
-
-.chart-container {
-    width: 100%;
-    height: 90%; /* Adjust height as needed */
-}
-
-
-</style>
 <body class="bg-gray-400 text-gray-100 font-sans antialiased">
-
-  
-
-    <main class=" p-2 flex h-screen">
-        <!-- First Section: Takes 1/4 of the space -->
+    <main class="p-2 flex h-screen">
         <section class="w-1/4">
-            <div>
-                <!-- Gainers Table -->
-                <div id="gainers-table" class="mb-2"></div>
-            </div>
-    
-            <div>
-                <!-- Active Stocks Table -->
-                <div id="active-table" class="mb-2"></div>
-            </div>
-    
+            <!-- Gainers Table -->
+            <div id="gainers-table" class="mb-2"></div>
+            <!-- Active Stocks Table -->
+            <div id="active-table" class="mb-2"></div>
+            <!-- News Section -->
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6 max-h-96 overflow-y-auto max-w-400" id="news_table">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-100" id="news_title">News</h3>
                 <ul id="news-container" class="list-disc pl-5 text-gray-300">
@@ -56,8 +38,6 @@
                 </ul>
             </div>
         </section>
-    
-        <!-- Second Section: Takes 3/4 of the space -->
         <section class="w-3/4 grid grid-cols-2 grid-rows-2 gap-4 ml-2 mr-2">
             <h3>5 minute interval</h3>
             <div id="chart1" class="chart-container p-2">
@@ -65,12 +45,10 @@
             </div>
             <div id="chart2" class="chart-container p-2">
                 <h3>1 minute interval</h3>
-
                 <!-- 1-minute interval chart -->
             </div>
             <div id="chart3" class="chart-container p-2">
                 <h3>1 day interval</h3>
-
                 <!-- 1-day interval chart -->
             </div>
             <div id="chart4" class="chart-container p-2">
@@ -78,9 +56,7 @@
                 <!-- 10-second interval chart -->
             </div>
         </section>
-        
     </main>
-    
 
     <!-- Include Tabulator JS from CDN -->
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
@@ -88,191 +64,161 @@
         document.addEventListener("DOMContentLoaded", function() {
             const gainersData = {{ gainers | tojson | safe }};
             const activeData = {{ active | tojson | safe }};
-            
-            console.log(gainersData);
-            console.log(activeData);
-    
-            // Initialize Gainers table with hard-coded column names
-            var gainersTable = new Tabulator("#gainers-table", {
+
+            // Initialize Gainers table
+            new Tabulator("#gainers-table", {
                 layout: "fitColumns",
                 columns: [
-                    { title: "Symbol",
-                     field: "symbol",
-                    
-                    },
+                    { title: "Symbol", field: "symbol" },
                     { title: "Name", field: "name" },
                     { title: "Change", field: "change" },
                     { title: "Price", field: "price" },
-                    { title: "% C",
-                     field: "changesPercentage" ,
-                     formatter: function(cell, formatterParams, onRendered){
-                            let row = cell.getRow();
-                            let pc = cell.getValue();
-                            row.getElement().style.color = "darkgreen";
-                           
-                            return pc;
-                            
-                        },
-                    },
-                    
+                    { title: "% C", field: "changesPercentage", formatter: (cell, formatterParams, onRendered) => {
+                        let row = cell.getRow();
+                        let pc = cell.getValue();
+                        row.getElement().style.color = "darkgreen";
+                        return pc;
+                    }},
                 ],
-               
                 data: gainersData,
-            });
-
-            gainersTable.on("rowClick", function(e, row) {
-                console.log("Row Clicked:", row.getData());
+            }).on("rowClick", function(e, row) {
                 get_news(row.getData().symbol);
             });
 
-
-    
             // Initialize Active Stocks table
-            var activeTable = new Tabulator("#active-table", {
+            new Tabulator("#active-table", {
                 layout: "fitColumns",
                 width: 400,
                 columns: [
                     { title: "Symbol", field: "symbol" },
                     { title: "Name", field: "name" },
-                    { title: "Price", field: "price"},
+                    { title: "Price", field: "price" },
                     { title: "Change", field: "change" },
-                    { title: "% C", field: "changesPercentage",
-              
-                     formatter: function(cell, formatterParams, onRendered){
-                            let row = cell.getRow();
-                            let pc = cell.getValue();
-                            row.getElement().style.color = "darkgreen";
-                           
-                            return pc;
-                            
-                        },
-                    },
-                 
+                    { title: "% C", field: "changesPercentage", formatter: (cell, formatterParams, onRendered) => {
+                        let row = cell.getRow();
+                        let pc = cell.getValue();
+                        row.getElement().style.color = "darkgreen";
+                        return pc;
+                    }},
                 ],
                 data: activeData,
-                
-            });
-            activeTable.on("rowClick", function(e, row) {
-                console.log("Row Clicked:", row.getData().symbol);
+            }).on("rowClick", function(e, row) {
                 get_news(row.getData().symbol);
-             });
-
+            });
         });
 
         async function get_news(ticker){
             const response = await fetch(`/news/${ticker}`);
             const data = await response.json();
-            console.log("Fetched data:", data);
 
             const newsContainer = document.getElementById('news-container');
-            newsContainer.innerHTML = ''; // Clear previous news
-
-            const newsTitle = document.getElementById('news_title');
             newsContainer.innerHTML = '';
+            const newsTitle = document.getElementById('news_title');
             newsTitle.innerHTML = `${ticker} News`;
 
             if (data.length === 0) {
-                const listItem = document.createElement('li');
-                listItem.classList.add('mb-4');
-                listItem.textContent = "No news available";
-                newsContainer.appendChild(listItem);
+                newsContainer.innerHTML = '<li class="mb-4">No news available</li>';
                 return;
-            }else{
-                data.forEach(news_item => {
-                console.log("Processing news item:", news_item);
-                
-                if (!news_item ) {
-                    console.log("News item is incomplete or missing:", news_item);
-                    
-                    // If any required information is missing, create a placeholder item
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('mb-4');
-                    listItem.textContent = "News couldn't be retrieved";
-                    newsContainer.appendChild(listItem);
-                    return;
-                }
+            }
 
+            data.forEach(news_item => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('mb-4');
-
                 const link = document.createElement('a');
                 link.href = news_item.url;
                 link.target = '_blank';
                 link.classList.add('text-blue-400', 'hover:underline');
                 link.textContent = news_item.title;
-
                 const summary = document.createElement('p');
                 summary.classList.add('mt-1');
                 summary.textContent = news_item.summary;
-
                 listItem.appendChild(link);
                 listItem.appendChild(summary);
                 newsContainer.appendChild(listItem);
-                
-                console.log("Appended news item:", news_item);
             });
-            }
+        }
 
-   
+        </script>
+
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+  class CandlestickChart {
+    constructor(containerId) {
+      this.containerId = containerId;
+      this.chart = null;
+      this.candlestickSeries = null;
+      this.startPoint = null;
+      this.isDragging = false;
+      this.dragStartPoint = null;
+      this.dragStartLineData = null;
+      this.selectedPoint = null;
+    }
+
+    async fetchData() {
+      try {
+        const response = await fetch("/static/test.json");
+        if (!response.ok) {
+          console.error('Error fetching data:', response.statusText);
+          return [];
+        }
+        const data = await response.json();
+        return data['TSLA'].values; // Adjust the key if needed
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+      }
+    }
+
+    mapDataToChartFormat(dataValues) {
+        return dataValues.map(bar => ({
+            time: new Date(bar.datetime).getTime() / 1000, // Convert to UNIX timestamp
+            open: parseFloat(bar.open),
+            high: parseFloat(bar.high),
+            low: parseFloat(bar.low),
+            close: parseFloat(bar.close),
+        })).filter(bar => bar.open !== null && bar.high !== null && bar.low !== null && bar.close !== null); // Filter out any null values
         }
 
 
-    </script>
-    <script>
-        async function getCandlestickData(symbol, timeframe, limit = 100) {
-            const apiKey = "PK2XO9N6WHJPS8B0V0E2";
-            const apiSecret = "8QT4Jhd3tYCfGosYjmJSbicKQjGfeb3ZmkXaYum2";
-            const endpoint = `https://data.alpaca.markets/v1/bars/${timeframe}?symbols=${symbol}&limit=${limit}`;
+        createChart() {
+        this.chart = LightweightCharts.createChart(document.getElementById(this.containerId), {
+            width: document.getElementById(this.containerId).offsetWidth,
+            height: document.getElementById(this.containerId).offsetHeight,
+            timeScale: {
+            timeVisible: true,
+            secondsVisible: true,
+            },
+            crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+            },
+        });
 
-            const response = await fetch(endpoint, {
-                method: 'GET',
-                headers: {
-                    'APCA-API-KEY-ID': apiKey,
-                    'APCA-API-SECRET-KEY': apiSecret,
-                }
-            });
+        this.candlestickSeries = this.chart.addCandlestickSeries();
+        }
+        
+    async loadDataAndCreateChart() {
+        const dataValues = await this.fetchData();
+        const candlestickData = this.mapDataToChartFormat(dataValues);
 
-            if (!response.ok) {
-                console.error('Error fetching data:', response.statusText);
-                return [];
-            }
-
-            const data = await response.json();
-            return data[symbol].map(bar => ({
-                time: bar.t,
-                open: bar.o,
-                high: bar.h,
-                low: bar.l,
-                close: bar.c,
-            }));
+        if (candlestickData.length === 0) {
+            console.error('No valid data to display.');
+            return;
         }
 
-        function createCandlestickChart(containerId, candlestickData) {
-            const chart = LightweightCharts.createChart(document.getElementById(containerId), {
-                width: 600,
-                height: 300,
-            });
-            const candlestickSeries = chart.addCandlestickSeries();
-            candlestickSeries.setData(candlestickData);
+        this.createChart();
+        console.log("Candlestickdata", candlestickData);
+        this.candlestickSeries.setData(candlestickData);
+        // this.setupChartInteractions();
         }
+  }
 
-        async function loadDataAndCreateCharts() {
-            const symbol = 'AAPL';
-            const intervals = ['1Min', '5Min', '15Min', '30Min'];
+  document.addEventListener('DOMContentLoaded', () => {
+    const chart = new CandlestickChart('chart1');
+    chart.loadDataAndCreateChart();
+  });
+</script>
 
-            for (let i = 0; i < intervals.length; i++) {
-                const candlestickData = await getCandlestickData(symbol, intervals[i]);
-                console.log(`Loaded ${candlestickData.length} data points for ${intervals[i]} interval`);
-                createCandlestickChart(`chart${i + 1}`, candlestickData);
-            }
-        }
-
-        loadDataAndCreateCharts();
-    </script>
-    
-    
-    
-   
+ 
     
 </body>
 </html>

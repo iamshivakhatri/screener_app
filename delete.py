@@ -1,15 +1,43 @@
-from datetime import datetime
-from pytz import timezone
+async  loadData() {
+  try {
+    const response = await fetch("/static/test.json");
+    const data = await response.json();
 
-barset= api.get_barset( 'DIA', '1Min', limit = 5 ).df
-display(barset)
+    // Assuming you're working with TSLA data as before
+    const tslaData = data.TSLA.values;
 
-market_timezone = timezone('America/New_York')
-current_time = datetime.now(market_timezone)
-display('{:%Y-%m-%d %H:%M:%S} is the current time'.format(current_time))
+    console.log("Data fetched successfully:", tslaData);
 
-last_bar_time = barset.index.max()
-delta_time = current_time - last_bar_time
-delta_time_sec = delta_time.total_seconds() % 60
-delta_time_min = delta_time.total_seconds() // 60
-display('delta time is {:.0f} min {:.0f} sec'.format(delta_time_min, delta_time_sec))
+    // Map the data to convert string values to numbers
+    this.klines = tslaData.map((item) => ({
+      time: Math.floor(new Date(item.datetime).getTime() / 1000),
+      open: parseFloat(item.open),
+      high: parseFloat(item.high),
+      low: parseFloat(item.low),
+      close: parseFloat(item.close),
+      volume: parseInt(item.volume, 10), // Convert volume to integer
+    }));
+
+    console.log("Data loaded successfully:", this.klines);
+
+    this.xspan = this.klines
+      .map((item) => item.time)
+      .map((d, i, arr) => (i ? arr[i] - arr[i - 1] : 0))[2];
+
+    const prebars = [...new Array(100)].map((_, i) => ({
+      time: this.klines[0].time - (i + 1) * this.xspan,
+    }));
+
+    const postbars = [...new Array(100)].map((_, i) => ({
+      time: this.klines[this.klines.length - 1].time + (i + 1) * this.xspan,
+    }));
+
+    // Set the data to the chart
+    this.candleseries.setData([...prebars, ...this.klines, ...postbars]);
+  } catch (error) {
+    console.error("Error fetching or parsing data:", error);
+  }
+}
+
+# 1685557800
+# 1724356740
