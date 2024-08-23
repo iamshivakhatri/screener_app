@@ -6,6 +6,8 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
+import requests
+
 
 load_dotenv()
 
@@ -17,6 +19,49 @@ news_cache = {}
 
 app = Flask(__name__)
 CORS(app)
+
+def fetch_time_series_data(tickers, interval):
+    
+    print(f"Fetching data for tickers: {tickers} with interval {interval}")
+    api_key = os.getenv('twelve_api')
+
+    # API endpoint
+    url = 'https://api.twelvedata.com/time_series'
+
+    # Parameters for the API request
+    params = {
+        'apikey': api_key,
+        'interval': interval,    
+        'symbol': tickers,
+        'outputsize': 1000       # Number of data points to retrieve (up to 1000)
+    }
+
+# Send GET request to the API
+    response = requests.get(url, params=params)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return None
+ 
+
+def get_time_series_data_for_tickers(ticker_list, intervals=['1min', '5min', '1hour', '1day'], rehit_interval=60):
+    all_data = {}
+
+    while True:
+        for interval in intervals:
+            data = fetch_time_series_data(ticker_list, interval)
+            if data:
+                all_data[interval] = data
+
+        # Process or store the data as needed
+        print("Fetched data:", all_data)
+
+        # Sleep for the specified rehit_interval before fetching again
+        time.sleep(rehit_interval * 60)  # Convert minutes to seconds
 
 # Load data
 def load_data():
@@ -89,6 +134,7 @@ def index():
     active_ticker_list = active_filtered['symbol'].tolist()
     print(active_ticker_list)
     ticker_list = combine_lists(gainer_tickers_list, active_ticker_list)
+    print("This is the list", ticker_list)
     global news_cache
     # news_cache = get_news(ticker_list)
     # print("This is news", news_cache)
