@@ -7,6 +7,11 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
+import threading
+import time
+import schedule
+from flask import jsonify
+
 
 
 load_dotenv()
@@ -20,14 +25,37 @@ news_cache = {}
 app = Flask(__name__)
 CORS(app)
 
+# Global dictionary to store data for each interval
+time_series_data = {
+    '1min': [],
+    '5min': [],
+    '1hour': [],
+    '1day': []
+
+}
+
+# Counter to keep track of API hits
+api_hit_counter = {
+    '1min': 0,
+    '5min': 0,
+    '1h': 0,
+    '1day': 0
+}
+
 def fetch_time_series_data(tickers, interval):
+    global api_hit_counter
     
+    # Increment the counter for the specific interval
+    api_hit_counter[interval] += 1
+
     print(f"Fetching data for tickers: {tickers} with interval {interval}")
-    api_key = os.getenv('twelve_api')
+    print(f"API hits for interval '{interval}': {api_hit_counter[interval]}")
+    api_key = os.getenv('twelve_api_2')
 
     # API endpoint
     url = 'https://api.twelvedata.com/time_series'
 
+    tickers = ','.join(tickers)
     # Parameters for the API request
     params = {
         'apikey': api_key,
@@ -46,22 +74,37 @@ def fetch_time_series_data(tickers, interval):
     else:
         print(f"Error: {response.status_code} - {response.text}")
         return None
- 
 
-def get_time_series_data_for_tickers(ticker_list, intervals=['1min', '5min', '1hour', '1day'], rehit_interval=60):
-    all_data = {}
+
+def job(interval, ticker_list):
+    global time_series_data
+    data = fetch_time_series_data(ticker_list, interval)
+    # print("This is data in the job", data)
+    time_series_data[interval].append(data)
+    print(f"Fetched and stored data for {interval}")
+
+def schedule_time_series_data_fetch(ticker_list):
+    schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list)
+    # schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list)
+    # schedule.every().hour.do(job, interval='1h', ticker_list=ticker_list)
+    # schedule.every().day.at("00:00").do(job, interval='1day', ticker_list=ticker_list)  # Fetch daily data at midnight
+
+    print("Data fetching is scheduled.")
+
+    # Manually trigger the first run of each job
+    job(interval='1min', ticker_list=ticker_list)
+    # job(interval='5min', ticker_list=ticker_list)
+    # job(interval='1h', ticker_list=ticker_list)
+    # job(interval='1day', ticker_list=ticker_list)
 
     while True:
-        for interval in intervals:
-            data = fetch_time_series_data(ticker_list, interval)
-            if data:
-                all_data[interval] = data
+        schedule.run_pending()
+        time.sleep(1)  # Sleep to prevent busy-waiting
 
-        # Process or store the data as needed
-        print("Fetched data:", all_data)
-
-        # Sleep for the specified rehit_interval before fetching again
-        time.sleep(rehit_interval * 60)  # Convert minutes to seconds
+def start_threaded_schedule(ticker_list):
+    t1 = threading.Thread(target=schedule_time_series_data_fetch, args=(ticker_list,))
+    t1.daemon = True  # Allows thread to exit when the main program exits
+    t1.start()
 
 # Load data
 def load_data():
@@ -108,9 +151,21 @@ def get_news(ticker_list):
     return news
 
 def combine_lists(list1, list2):
-    combined_set = set(list1) | set(list2)  # Combine both lists into a set to remove duplicates
-    combined_list = list(combined_set)      # Convert the set back to a list
+    # Explicitly add 'TSLA' to the first list
+    # if 'TSLA' not in list1:
+    #     list1.append('TSLA')
+    
+    # Combine both lists into a set to remove duplicates
+    combined_set = set(list1) | set(list2)
+    
+    # Convert the set back to a list
+    combined_list = list(combined_set)
+    combined_list = combined_list[0:6]
+    combined_list.append('TSLA')
+
+
     return combined_list
+
 
 
 @app.route('/')
@@ -138,6 +193,7 @@ def index():
     global news_cache
     # news_cache = get_news(ticker_list)
     # print("This is news", news_cache)
+    start_threaded_schedule(ticker_list)
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 
@@ -146,6 +202,35 @@ def index():
 @app.route('/try_page')
 def try_page():
     return render_template('try.html')
+
+@app.route('/get_ticker_data/<interval>/<ticker>', methods=['GET'])
+def get_ticker_data(interval, ticker):
+    print("This is interval", interval, "This is ticker", ticker)
+
+
+    global time_series_data
+
+    # Get the list of data for the given interval
+    interval_data = time_series_data.get(interval, [])
+    print("This is interval data", len(interval_data))
+
+    # If the interval data is empty, return an empty list
+    if not interval_data:
+        return jsonify([])
+    
+    with open("newfile.txt", "w") as f:
+        f.write(json.dumps(interval_data, indent=4))
+
+    # Iterate through the list to find the ticker data
+    whole_data = interval_data[0]
+    for stock_data in whole_data:
+        print("This is stock data", stock_data)
+        if ticker == stock_data:
+            print("This data in get_ticker_data",len(whole_data[ticker]))
+            return jsonify(whole_data[ticker]['values'])  # Return the data for the specified ticker
+
+    # If ticker is not found, return an empty list
+    return jsonify([])
 
 
 

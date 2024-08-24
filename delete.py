@@ -1,47 +1,81 @@
-async  loadData() {
-  try {
-    const response = await fetch("/static/test.json");
-    const data = await response.json();
+import threading
+import schedule
+import time
+import requests
+import os
+from dotenv import load_dotenv
 
-    // Assuming you're working with TSLA data as before
-    const tslaData = data.TSLA.values;
+load_dotenv()
+# Global dictionary to store data for each interval
+time_series_data = {
+    '1min': [],
+    '5min': [],
+    '1hour': [],
+    '1day': []
 
-    console.log("Data fetched successfully:", tslaData);
-
-    // Map the data to convert string values to numbers
-    this.klines = tslaData.map((item) => ({
-      time: Math.floor(new Date(item.datetime).getTime() / 1000),
-      open: parseFloat(item.open),
-      high: parseFloat(item.high),
-      low: parseFloat(item.low),
-      close: parseFloat(item.close),
-      volume: parseInt(item.volume, 10), // Convert volume to integer
-    }));
-
-    console.log("Data loaded successfully:", this.klines);
-
-    this.xspan = this.klines
-      .map((item) => item.time)
-      .map((d, i, arr) => (i ? arr[i] - arr[i - 1] : 0))[2];
-
-    const prebars = [...new Array(100)].map((_, i) => ({
-      time: this.klines[0].time - (i + 1) * this.xspan,
-    }));
-
-    const postbars = [...new Array(100)].map((_, i) => ({
-      time: this.klines[this.klines.length - 1].time + (i + 1) * this.xspan,
-    }));
-
-    // Set the data to the chart
-    this.candleseries.setData([...prebars, ...this.klines, ...postbars]);
-  } catch (error) {
-    console.error("Error fetching or parsing data:", error);
-  }
 }
 
-# 1685557800
-# 1724356740
+def fetch_time_series_data(tickers, interval):
+
+    print(f"Fetching data for tickers: {tickers} with interval {interval}")
+    api_key = os.getenv('twelve_api')
+
+    # API endpoint
+    url = 'https://api.twelvedata.com/time_series'
+
+    tickers = ','.join(tickers)
+    # Parameters for the API request
+    params = {
+        'apikey': api_key,
+        'interval': interval,    
+        'symbol': tickers,
+        'outputsize': 1000       # Number of data points to retrieve (up to 1000)
+    }
+
+# Send GET request to the API
+    response = requests.get(url, params=params)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return None
 
 
-# 1685597880
-# 1724347620
+def job(interval, ticker_list):
+    global time_series_data
+    data = fetch_time_series_data(ticker_list, interval)
+    time_series_data[interval].append(data)
+    print(f"Fetched and stored data for {interval}: {data}")
+
+def schedule_time_series_data_fetch(ticker_list):
+    schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list)
+    schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list)
+    schedule.every().hour.do(job, interval='1h', ticker_list=ticker_list)
+    schedule.every().day.at("00:00").do(job, interval='1day', ticker_list=ticker_list)  # Fetch daily data at midnight
+
+    print("Data fetching is scheduled.")
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)  # Sleep to prevent busy-waiting
+
+def start_threaded_schedule(ticker_list):
+    t1 = threading.Thread(target=schedule_time_series_data_fetch, args=(ticker_list,))
+    t1.daemon = True  # Allows thread to exit when the main program exits
+    t1.start()
+
+if __name__ == "__main__":
+    gainer_tickers_list = ['AAPL', 'TSLA']
+    active_ticker_list = ['MSFT', 'GOOGL']
+    ticker_list = gainer_tickers_list + active_ticker_list  # Combine the lists
+
+    # Start the scheduling thread
+    start_threaded_schedule(ticker_list)
+
+    # Main thread doing its own work
+    while True:
+        print("Main thread is running simultaneously.")
+        time.sleep(10)  # Simulate some ongoing work in the main thread

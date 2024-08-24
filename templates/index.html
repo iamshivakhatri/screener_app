@@ -41,7 +41,7 @@
         <section class="w-3/4 grid grid-cols-2 grid-rows-2 gap-4 ml-2 mr-2">
             
             <div id="chart1" class="chart-container p-2">
-                <h3>5 minute interval</h3>
+                <h3>1 minute interval</h3>
                 <!-- 5-minute interval chart -->
             </div>
             <div id="chart2" class="chart-container p-2">
@@ -49,7 +49,7 @@
                 <!-- 1-minute interval chart -->
             </div>
             <div id="chart3" class="chart-container p-2">
-                <h3>1 minute interval</h3>
+                <h3>5 minute interval</h3>
                 <!-- 1-day interval chart -->
             </div>
             <div id="chart4" class="chart-container p-2">
@@ -62,10 +62,108 @@
     <!-- Include Tabulator JS from CDN -->
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
     <script>
+        class CandlestickChart {
+    constructor(containerId, interval) {
+        this.containerId = containerId;
+        this.interval = interval; // Interval (1min, 5min, 1hour, 1day)
+        this.chart = null;
+        this.candlestickSeries = null;
+        console.log("ContainerId", containerId, "Interval", interval);
+    }
+
+    async fetchData(ticker) {
+        try {
+            console.log("Fetching data for ticker", ticker, "and interval", this.interval);
+            const response = await fetch(`/get_ticker_data/${this.interval}/${ticker}`);
+            console.log("Response in fetchData", response);
+            if (!response.ok) {
+                console.error('Error fetching data:', response.statusText);
+                return [];
+            }
+            const data = await response.json();
+            console.log("Data for fetchData", data);
+            return data || []; // Adjust the key if needed
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    }
+
+    mapDataToChartFormat(dataValues) {
+        return dataValues.map(item => {
+            const date = new Date(item.datetime + ' UTC');
+            const timestampInSeconds = Math.floor(date.getTime() / 1000);
+
+            return {
+                time: timestampInSeconds, 
+                open: parseFloat(item.open),
+                high: parseFloat(item.high),
+                low: parseFloat(item.low),
+                close: parseFloat(item.close),
+            };
+        }).reverse(); 
+    }
+
+    createChart() {
+        this.chart = LightweightCharts.createChart(document.getElementById(this.containerId), {
+            width: document.getElementById(this.containerId).offsetWidth,
+            height: document.getElementById(this.containerId).offsetHeight,
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: true,
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+        });
+
+        this.candlestickSeries = this.chart.addCandlestickSeries();
+    }
+
+    async loadDataAndCreateChart(ticker) {
+        console.log("loaddataandcreatechart", ticker);
+        const dataValues = await this.fetchData(ticker);
+        console.log("DataValues for ticker", dataValues);
+        if (dataValues.length === 0) {
+            console.error('No valid data to display.');
+            return;
+        }
+        const candlestickData = this.mapDataToChartFormat(dataValues);
+        console.log("CandlestickData", candlestickData);
+
+        if (candlestickData.length === 0) {
+            console.error('No valid data to display.');
+            return;
+        }
+
+        if (!this.chart) {
+            this.createChart();
+        }
+
+        this.candlestickSeries.setData(candlestickData);
+    }
+    }
+
+
+        const chartInstances = {};
+        let selectedTicker = 'TSLA'; // Default ticker
+
+        // Initialize the chart globally
+        const chart = new CandlestickChart('chart1', '1min');
+        chartInstances['1min'] = chart;
+
+            // Function to load data and create the chart
+        function loadInitialChart() {
+            chart.loadDataAndCreateChart(selectedTicker);  // Load initial chart with default ticker
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             const gainersData = {{ gainers | tojson | safe }};
             const activeData = {{ active | tojson | safe }};
 
+            loadInitialChart();  // Load the chart once the DOM is ready
+
+            
             // Initialize Gainers table
             new Tabulator("#gainers-table", {
                 layout: "fitColumns",
@@ -83,7 +181,9 @@
                 ],
                 data: gainersData,
             }).on("rowClick", function(e, row) {
-                get_news(row.getData().symbol);
+                selectedTicker = row.getData().symbol;
+                chart.loadDataAndCreateChart(selectedTicker);
+                get_news(selectedTicker);
             });
 
             // Initialize Active Stocks table
@@ -104,7 +204,9 @@
                 ],
                 data: activeData,
             }).on("rowClick", function(e, row) {
-                get_news(row.getData().symbol);
+                selectedTicker = row.getData().symbol;
+                chart.loadDataAndCreateChart(selectedTicker);
+                get_news(selectedTicker);
             });
         });
 
@@ -139,10 +241,45 @@
             });
         }
 
+
+        // chart
+        document.addEventListener('DOMContentLoaded', () => {
+    // Define intervals in milliseconds
+    const intervals = {
+        '1min': 60000,      // 1 minute
+        // '5min': 300000,     // 5 minutes
+        // '1hour': 3600000,   // 1 hour
+        // '1day': 86400000    // 1 day
+    };
+
+
+
+    // Create and load charts for different intervals
+    Object.keys(intervals).forEach(interval => {
+
+        if (!chartInstances[interval]) {
+                const chart = new CandlestickChart(`chart${interval === '1min' ? 1 : interval === '5min' ? 2 : interval === '1hour' ? 3 : 4}`, interval);
+                chartInstances[interval] = chart;
+            }
+        // chart.loadDataAndCreateChart();
+
+        // Set interval to fetch data every X milliseconds based on the interval
+        setInterval(() => {
+            // Assuming `selectedTicker` is a global variab le or comes from user input
+            console.log("SelectedTicker", selectedTicker);
+            const ticker = 'TSLA'; // Default to AAPL if not specified
+            console.log("Ticker", ticker, "Interval", interval, "and calling the loadDataAndCreateChart");
+            chart.loadDataAndCreateChart(selectedTicker);
+        }, intervals[interval]);
+    });
+});
+
+
+
         </script>
 
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<script>
+<!-- <script>
   class CandlestickChart {
     constructor(containerId, interval) {
         this.containerId = containerId;
@@ -151,7 +288,7 @@
         this.candlestickSeries = null;
     }
 
-    async fetchData() {
+    async fetchData(ticker) {
         try {
             const response = await fetch(`/static/${this.interval}.json`);
             console.log("name ", `/static/${this.interval}.json`);
@@ -203,8 +340,8 @@
         this.candlestickSeries = this.chart.addCandlestickSeries();
     }
 
-    async loadDataAndCreateChart() {
-        const dataValues = await this.fetchData();
+    async loadDataAndCreateChart(ticker) {
+        const dataValues = await this.fetchData(ticker);
         console.log("DataValues", dataValues);
         const candlestickData = this.mapDataToChartFormat(dataValues);
 
@@ -228,9 +365,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+async function fetchData(ticker, interval) {
+        try {
+            const response = await fetch(`/get_ticker_data/${interval}/${ticker}`);
+            if (!response.ok) {
+                console.error('Error fetching data:', response.statusText);
+                return [];
+            }
+            const data = await response.json();
+            console.log("This is the data received ", data);
+            return data || []; // Adjust the key if needed
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    }
+
+
+setInterval(async () => {
+    const receivedData = await fetchData('TSLA', '1min');
+    console.log("ReceivedData", receivedData);
+}, 60000);
+
 </script>
 
- 
+  -->
+
+<script>
+   
+</script>
+
     
 </body>
 </html>

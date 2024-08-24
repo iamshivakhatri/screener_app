@@ -1,56 +1,40 @@
-import requests
-import matplotlib.pyplot as plt
-import json
 import os
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
-# Your API key here
-api_key = os.getenv('twelve_api')
+def fetch_time_series_data(tickers, interval):
 
-# API endpoint
-url = 'https://api.twelvedata.com/time_series'
+    print(f"Fetching data for tickers: {tickers} with interval {interval}")
+    api_key = os.getenv('twelve_api')
 
-# Parameters for the API request
-params = {
-    'apikey': api_key,
-    'interval': '1h',     # 1-minute interval
-    'symbol': 'TSLA',
-    'outputsize': 1000       # Number of data points to retrieve (up to 1000)
-}
+    # API endpoint
+    url = 'https://api.twelvedata.com/time_series'
 
-# Send GET request to the API
-response = requests.get(url, params=params)
+    tickers = ','.join(tickers)
 
-# Check if the request was successful
-if response.status_code == 200:
-    data = response.json()
-    print(json.dumps(data, indent=2))
-    with open("1hour.json", "w") as f:
-        f.write(json.dumps(data, indent=2))
+    # Parameters for the API request
+    params = {
+        'apikey': api_key,
+        'interval': interval,    
+        'symbol': tickers,
+        'outputsize': 1000       # Number of data points to retrieve (up to 1000)
+    }
+    response = requests.get(url, params=params)
 
-#     # Check if data is available
-#     if 'values' in data:
-#         # Extracting data
-#         dates = [item['datetime'] for item in data['values']]
-#         closing_prices = [float(item['close']) for item in data['values']]
+    # Check if the request was successful
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return None
+ 
 
-#         # Reverse the lists to ensure the data is in chronological order
-#         dates.reverse()
-#         closing_prices.reverse()
+gainer_tickers_list = ['AAPL', 'TSLA']
+active_ticker_list = ['MSFT', 'GOOGL']
+tickers = gainer_tickers_list + active_ticker_list 
 
-#         # Plotting the data
-#         plt.figure(figsize=(10, 5))
-#         plt.plot(dates, closing_prices, marker='o')
-#         plt.title('TSLA 1-Minute Interval Closing Prices')
-#         plt.xlabel('Date and Time')
-#         plt.ylabel('Closing Price (USD)')
-#         plt.xticks(rotation=45)
-#         plt.grid(True)
-#         plt.tight_layout()
-#         plt.show()
-#     else:
-#         print("No data available.")
-# else:
-#     print(f"Error: {response.status_code} - {response.text}")
+data = fetch_time_series_data(tickers, '1min')  # Replace 'AAPL' with your desired tickers
+print(data )
