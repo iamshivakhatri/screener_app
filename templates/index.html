@@ -151,12 +151,21 @@
         let selectedTicker = 'TSLA'; // Default ticker
 
         // Initialize the chart globally
-        const chart = new CandlestickChart('chart1', '1min');
-        chartInstances['1min'] = chart;
+        const chart1 = new CandlestickChart('chart1', '1min');
+        chartInstances['1min'] = chart1;
+
+        const chart2 = new CandlestickChart('chart2', '1day');
+        chartInstances['1day'] = chart2;
+
+        const chart3 = new CandlestickChart('chart3', '1h');
+        chartInstances['1h'] = chart3;
 
             // Function to load data and create the chart
         function loadInitialChart() {
-            chart.loadDataAndCreateChart(selectedTicker);  // Load initial chart with default ticker
+            chart1.loadDataAndCreateChart(selectedTicker); 
+            chart2.loadDataAndCreateChart(selectedTicker);
+            chart3.loadDataAndCreateChart(selectedTicker);
+             // Load initial chart with default ticker
         }
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -164,6 +173,8 @@
             const activeData = {{ active | tojson | safe }};
 
             loadInitialChart();  // Load the chart once the DOM is ready
+
+            setTimeout(loadInitialChart, 120000);
 
             
             // Initialize Gainers table
@@ -184,7 +195,9 @@
                 data: gainersData,
             }).on("rowClick", function(e, row) {
                 selectedTicker = row.getData().symbol;
-                chart.loadDataAndCreateChart(selectedTicker);
+                chart1.loadDataAndCreateChart(selectedTicker);
+                chart2.loadDataAndCreateChart(selectedTicker);
+                chart3.loadDataAndCreateChart(selectedTicker);
                 get_news(selectedTicker);
             });
 
@@ -207,7 +220,9 @@
                 data: activeData,
             }).on("rowClick", function(e, row) {
                 selectedTicker = row.getData().symbol;
-                chart.loadDataAndCreateChart(selectedTicker);
+                chart1.loadDataAndCreateChart(selectedTicker);
+                chart2.loadDataAndCreateChart(selectedTicker);
+                chart3.loadDataAndCreateChart(selectedTicker);
                 get_news(selectedTicker);
             });
         });
@@ -250,7 +265,7 @@
     const intervals = {
         '1min': 60000,      // 1 minute
         // '5min': 300000,     // 5 minutes
-        '1hour': 3600000,   // 1 hour
+        '1h': 3600000,   // 1 hour
         '1day': 86400000    // 1 day
     };
 
@@ -259,19 +274,15 @@
     // Create and load charts for different intervals
     Object.keys(intervals).forEach(interval => {
 
-        if (!chartInstances[interval]) {
-                const chart = new CandlestickChart(`chart${interval === '1min' ? 1 : interval === '5min' ? 2 : interval === '1hour' ? 3 : 4}`, interval);
-                chartInstances[interval] = chart;
-            }
+       
         // chart.loadDataAndCreateChart();
 
         // Set interval to fetch data every X milliseconds based on the interval
         setInterval(() => {
             // Assuming `selectedTicker` is a global variab le or comes from user input
             console.log("SelectedTicker", selectedTicker);
-            const ticker = 'TSLA'; // Default to AAPL if not specified
-            console.log("Ticker", ticker, "Interval", interval, "and calling the loadDataAndCreateChart");
-            chart.loadDataAndCreateChart(selectedTicker);
+            console.log("Ticker", selectedTicker, "Interval", interval, "and calling the loadDataAndCreateChart");
+            chartInstances[interval].loadDataAndCreateChart(selectedTicker);
         }, intervals[interval]);
     });
 });

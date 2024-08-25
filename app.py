@@ -29,14 +29,14 @@ CORS(app)
 time_series_data1 = {
     '1min': [],
     '5min': [],
-    '1hour': [],
+    '1h': [],
     '1day': []
 }
 
 time_series_data2 = {
     '1min': [],
     '5min': [],
-    '1hour': [],
+    '1h': [],
     '1day': []
 
 }
@@ -130,6 +130,34 @@ def job(interval, ticker_list, api):
     
 
 def schedule_time_series_data_fetch(ticker_list1, ticker_list2):
+    print("1 min job")
+    job(interval='1min', ticker_list=ticker_list1, api='one')
+    # job(interval='1min', ticker_list=ticker_list2, api='two')
+
+    # Trigger daily data fetch
+    print("1 day job")
+    job(interval='1day', ticker_list=ticker_list1, api='one')
+    time.sleep(60)  # Wait 1 minute
+
+    # Trigger hourly data fetch
+    print("1 hour job")
+    job(interval='1h', ticker_list=ticker_list1, api='one')
+    time.sleep(60)  # Wait 1 minute
+
+    print("1 day job")
+    job(interval='1day', ticker_list=ticker_list2, api='two')
+    time.sleep(60)  # Wait 1 minute
+
+
+    
+
+
+    
+    print("1 hour job")
+    job(interval='1h', ticker_list=ticker_list2, api='two')
+    print("Waiting for one minute")
+    time.sleep(60)  # Wait 1 minute
+
     schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list1, api = 'one')
     # schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list1, api = 'one')
     schedule.every().hour.at(":00").do(job, interval='1h', ticker_list=ticker_list1,  api = 'one')
@@ -152,38 +180,9 @@ def start_threaded_schedule(ticker_list1, ticker_list2):
     t1.daemon = True  # Allows thread to exit when the main program exits
     t1.start()
 
-def trigger_initial_api_hits(ticker_list1, ticker_list2):
-    # Manually trigger the first run of each job with a delay to respect the rate limit
-    # Trigger minute data fetch
-    print("1 min job")
-    job(interval='1min', ticker_list=ticker_list1, api='one')
-    # job(interval='1min', ticker_list=ticker_list2, api='two')
-
-    # Trigger daily data fetch
-    print("1 day job")
-    job(interval='1day', ticker_list=ticker_list1, api='one')
-    time.sleep(60)  # Wait 1 minute
-
-    print("1 day job")
-    job(interval='1day', ticker_list=ticker_list2, api='two')
-    time.sleep(60)  # Wait 1 minute
-
-
-    # Trigger hourly data fetch
-    print("1 hour job")
-    job(interval='1h', ticker_list=ticker_list1, api='one')
-
-    print("1 hour job")
-    time.sleep(60)  # Wait 1 minute
-    job(interval='1h', ticker_list=ticker_list2, api='two')
-
-
 
 
     
-    # time.sleep(60)  # Wait 1 minute
-
-    start_threaded_schedule(ticker_list1, ticker_list2)
 
     
 
@@ -283,7 +282,8 @@ def index():
     # print("This is news", news_cache)
 
     # Manually trigger the initial API hits
-    trigger_initial_api_hits(ticker_list1, ticker_list2)
+    # trigger_initial_api_hits(ticker_list1, ticker_list2)
+    start_threaded_schedule(ticker_list1, ticker_list2)
     
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
