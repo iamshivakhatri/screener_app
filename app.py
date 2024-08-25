@@ -26,7 +26,14 @@ app = Flask(__name__)
 CORS(app)
 
 # Global dictionary to store data for each interval
-time_series_data = {
+time_series_data1 = {
+    '1min': [],
+    '5min': [],
+    '1hour': [],
+    '1day': []
+}
+
+time_series_data2 = {
     '1min': [],
     '5min': [],
     '1hour': [],
@@ -42,18 +49,38 @@ api_hit_counter = {
     '1day': 0
 }
 
-def fetch_time_series_data(tickers, interval):
+ticker_list1 = []
+ticker_list2 = []
+
+def fetch_time_series_data(tickers, interval, api):
+
+
     global api_hit_counter
+
+    
+
     
     # Increment the counter for the specific interval
     api_hit_counter[interval] += 1
 
     print(f"Fetching data for tickers: {tickers} with interval {interval}")
     print(f"API hits for interval '{interval}': {api_hit_counter[interval]}")
-    api_key = os.getenv('twelve_api_2')
+    
 
     # API endpoint
     url = 'https://api.twelvedata.com/time_series'
+
+    
+
+    # TODO: FIX THIS WHEN YOU HOST IT.
+    if interval == '1h' or interval == '1day':
+        api_key = os.getenv('twelve_api_1h')
+    elif api == 'one':
+        api_key = os.getenv('twelve_api_2')
+    else:
+        api_key = os.getenv('twelve_api')
+
+
 
     tickers = ','.join(tickers)
     # Parameters for the API request
@@ -76,35 +103,89 @@ def fetch_time_series_data(tickers, interval):
         return None
 
 
-def job(interval, ticker_list):
-    global time_series_data
-    data = fetch_time_series_data(ticker_list, interval)
+def job(interval, ticker_list, api):
+    global time_series_data1
+    global time_series_data2
+    data = fetch_time_series_data(ticker_list, interval, api)
     # print("This is data in the job", data)
-    time_series_data[interval].append(data)
-    print(f"Fetched and stored data for {interval}")
 
-def schedule_time_series_data_fetch(ticker_list):
-    schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list)
-    # schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list)
-    # schedule.every().hour.do(job, interval='1h', ticker_list=ticker_list)
-    # schedule.every().day.at("00:00").do(job, interval='1day', ticker_list=ticker_list)  # Fetch daily data at midnight
+    # if interval == '1h' or interval == '1day':
+
+    if interval == '1h':
+        with open("1h_data.txt", "w") as f:
+            f.write(json.dumps(data, indent=4))
+    elif interval == '1day':
+        with open("1day_data.txt", "w") as f:
+            f.write(json.dumps(data, indent=4))
+    elif interval == '1min':
+        with open("1min_data.txt", "w") as f:
+            f.write(json.dumps(data, indent=4))
+
+    if api == 'one':
+        time_series_data1[interval] = data
+        print(f"Fetched and stored data for {interval} with api {api}")
+    else:
+        time_series_data2[interval] = data
+        print(f"Fetched and stored data for {interval} with api {api}")
+    
+
+def schedule_time_series_data_fetch(ticker_list1, ticker_list2):
+    schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list1, api = 'one')
+    # schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list1, api = 'one')
+    schedule.every().hour.at(":00").do(job, interval='1h', ticker_list=ticker_list1,  api = 'one')
+    schedule.every().day.at("00:02").do(job, interval='1day', ticker_list=ticker_list1, api = 'one')  # Fetch daily data at midnight
+
+    # TODO: Uncomment the following lines to fetch data for the second list
+    # schedule.every(1).minutes.do(job, interval='1min', ticker_list=ticker_list2, api = 'two')
+    # schedule.every(5).minutes.do(job, interval='5min', ticker_list=ticker_list2, api = 'two')
+    schedule.every().hour.at(":01").do(job, interval='1h', ticker_list=ticker_list2, api = 'two')
+    schedule.every().day.at("00:03").do(job, interval='1day', ticker_list=ticker_list2,api = 'two')  # Fetch daily data at midnight
 
     print("Data fetching is scheduled.")
-
-    # Manually trigger the first run of each job
-    job(interval='1min', ticker_list=ticker_list)
-    # job(interval='5min', ticker_list=ticker_list)
-    # job(interval='1h', ticker_list=ticker_list)
-    # job(interval='1day', ticker_list=ticker_list)
 
     while True:
         schedule.run_pending()
         time.sleep(1)  # Sleep to prevent busy-waiting
 
-def start_threaded_schedule(ticker_list):
-    t1 = threading.Thread(target=schedule_time_series_data_fetch, args=(ticker_list,))
+def start_threaded_schedule(ticker_list1, ticker_list2):
+    t1 = threading.Thread(target=schedule_time_series_data_fetch, args=(ticker_list1, ticker_list2 ))
     t1.daemon = True  # Allows thread to exit when the main program exits
     t1.start()
+
+def trigger_initial_api_hits(ticker_list1, ticker_list2):
+    # Manually trigger the first run of each job with a delay to respect the rate limit
+    # Trigger minute data fetch
+    print("1 min job")
+    job(interval='1min', ticker_list=ticker_list1, api='one')
+    # job(interval='1min', ticker_list=ticker_list2, api='two')
+
+    # Trigger daily data fetch
+    print("1 day job")
+    job(interval='1day', ticker_list=ticker_list1, api='one')
+    time.sleep(60)  # Wait 1 minute
+
+    print("1 day job")
+    job(interval='1day', ticker_list=ticker_list2, api='two')
+    time.sleep(60)  # Wait 1 minute
+
+
+    # Trigger hourly data fetch
+    print("1 hour job")
+    job(interval='1h', ticker_list=ticker_list1, api='one')
+
+    print("1 hour job")
+    time.sleep(60)  # Wait 1 minute
+    job(interval='1h', ticker_list=ticker_list2, api='two')
+
+
+
+
+    
+    # time.sleep(60)  # Wait 1 minute
+
+    start_threaded_schedule(ticker_list1, ticker_list2)
+
+    
 
 # Load data
 def load_data():
@@ -170,6 +251,8 @@ def combine_lists(list1, list2):
 
 @app.route('/')
 def index():
+    global ticker_list1
+    global ticker_list2
     # Load and process the first dataset
     with open("fmp_gainers.json", "r") as f:
         gainers_data = json.load(f)
@@ -188,12 +271,20 @@ def index():
     active_filtered = active_filtered.reset_index(drop=True)
     active_ticker_list = active_filtered['symbol'].tolist()
     print(active_ticker_list)
-    ticker_list = combine_lists(gainer_tickers_list, active_ticker_list)
-    print("This is the list", ticker_list)
+    ticker_list1 = gainer_tickers_list[:7]
+    ticker_list1.append('TSLA')
+    ticker_list2 = active_ticker_list[:7]
+
+
+
+    # ticker_list = combine_lists(gainer_tickers_list, active_ticker_list)
     global news_cache
     # news_cache = get_news(ticker_list)
     # print("This is news", news_cache)
-    start_threaded_schedule(ticker_list)
+
+    # Manually trigger the initial API hits
+    trigger_initial_api_hits(ticker_list1, ticker_list2)
+    
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
 
@@ -208,26 +299,39 @@ def get_ticker_data(interval, ticker):
     print("This is interval", interval, "This is ticker", ticker)
 
 
-    global time_series_data
+    global time_series_data1
+    global time_series_data2
+    global ticker_list1
+    global ticker_list2
+
+    print("This is ticker list 1", ticker_list1)
+    print("This is ticker list 2", ticker_list2)
+
+
+    if ticker in ticker_list1:
+        time_series_data = time_series_data1
+    else:
+        time_series_data = time_series_data2
+
+    with open("time_series_data.txt", "w") as f:
+        f.write(json.dumps(time_series_data, indent=4))
 
     # Get the list of data for the given interval
     interval_data = time_series_data.get(interval, [])
+ 
     print("This is interval data", len(interval_data))
+
 
     # If the interval data is empty, return an empty list
     if not interval_data:
         return jsonify([])
     
-    with open("newfile.txt", "w") as f:
-        f.write(json.dumps(interval_data, indent=4))
 
-    # Iterate through the list to find the ticker data
-    whole_data = interval_data[0]
-    for stock_data in whole_data:
+
+    for stock_data in interval_data:
         print("This is stock data", stock_data)
         if ticker == stock_data:
-            print("This data in get_ticker_data",len(whole_data[ticker]))
-            return jsonify(whole_data[ticker]['values'])  # Return the data for the specified ticker
+            return jsonify(interval_data[ticker]['values'])  # Return the data for the specified ticker
 
     # If ticker is not found, return an empty list
     return jsonify([])
