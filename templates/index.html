@@ -12,6 +12,11 @@
 
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
+    <!-- For toast -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
     <style>
         #gainers-table, #active-table, #news_table {
             width: 100%;
@@ -220,6 +225,7 @@
                 chart3.loadDataAndCreateChart(selectedTicker);
                 get_news(selectedTicker);
                 changeTickerInput(selectedTicker);
+                
             });
 
             // Initialize Active Stocks table
@@ -450,12 +456,16 @@ setInterval(async () => {
                         body: JSON.stringify({ ticker, qty })
                     });
                     const result = await response.json();
-                    alert(result.message || result.error);
+                    // alert(result.message || result.error);
+                    toastr.success(result.message || result.error);
+
                 } catch (error) {
-                    alert('Error: ' + error.message);
+                    // alert('Error: ' + error.message);
+                    toastr.error('Error: ' + error.message);
+                    
                 }
             } else {
-                alert('Please enter ticker and quantity.');
+                toastr.warning('Please enter ticker and quantity.');
             }
         });
 
@@ -473,12 +483,15 @@ setInterval(async () => {
                         body: JSON.stringify({ ticker, qty })
                     });
                     const result = await response.json();
-                    alert(result.message || result.error);
+                    // alert(result.message || result.error);
+                    toastr.success(result.message || result.error);
                 } catch (error) {
-                    alert('Error: ' + error.message);
+                    // alert('Error: ' + error.message);
+                    toastr.error('Error: ' + error.message);
                 }
             } else {
-                alert('Please enter ticker and quantity.');
+                // alert('Please enter ticker and quantity.');
+                toastr.warning('Please enter ticker and quantity.');
             }
         });
     });
