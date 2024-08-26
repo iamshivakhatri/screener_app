@@ -11,6 +11,8 @@ import threading
 import time
 import schedule
 from flask import jsonify
+import sqlite3
+
 
 
 
@@ -24,6 +26,14 @@ news_cache = {}
 
 app = Flask(__name__)
 CORS(app)
+
+def create_table():
+    conn = sqlite3.connect('stock.db')
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE IF NOT EXISTS stock_data (ticker TEXT, data TEXT, interval TEXT, api TEXT)')
+    conn.commit()
+    conn.close()
+
 
 # Global dictionary to store data for each interval
 time_series_data1 = {
