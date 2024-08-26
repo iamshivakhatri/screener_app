@@ -30,9 +30,26 @@ CORS(app)
 def create_table():
     conn = sqlite3.connect('stock.db')
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS stock_data (ticker TEXT, data TEXT, interval TEXT, api TEXT)')
+    cur.execute('CREATE TABLE IF NOT EXISTS stock_data (ticker TEXT, data TEXT, interval TEXT)')
     conn.commit()
     conn.close()
+
+
+def insert_or_update_data(ticker, data, interval):
+    print(f"Inserting/updating data for {ticker} with interval {interval} and data length {len(data)}")
+    conn = sqlite3.connect('stock.db')
+    cur = conn.cursor()
+    
+    # Insert or update the data
+    cur.execute('''
+        INSERT OR REPLACE INTO stock_data (ticker, data, interval)
+        VALUES (?, ?, ?)
+    ''', (ticker, data, interval))
+    
+    conn.commit()
+    conn.close()
+
+create_table()
 
 
 # Global dictionary to store data for each interval
@@ -120,6 +137,11 @@ def job(interval, ticker_list, api):
     # print("This is data in the job", data)
 
     # if interval == '1h' or interval == '1day':
+
+    for ticker in  data:
+        insert_or_update_data(ticker, json.dumps(data[ticker]['values']), interval)
+
+
 
     if interval == '1h':
         with open("1h_data.txt", "w") as f:
@@ -293,7 +315,7 @@ def index():
 
     # Manually trigger the initial API hits
     # trigger_initial_api_hits(ticker_list1, ticker_list2)
-    start_threaded_schedule(ticker_list1, ticker_list2)
+    # start_threaded_schedule(ticker_list1, ticker_list2)
     
 
     return render_template('index.html', gainers=gainers_filtered.to_dict(orient='records'), active=active_filtered.to_dict(orient='records'))
@@ -304,47 +326,70 @@ def index():
 def try_page():
     return render_template('try.html')
 
+def get_stock_data(ticker, interval):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('stock.db')
+    cur = conn.cursor()
+
+    # Fetch data from the table based on ticker and interval
+    cur.execute('SELECT data FROM stock_data WHERE ticker = ? AND interval = ?', (ticker, interval))
+    row = cur.fetchone()
+
+    # Close the connection
+    conn.close()
+
+    # Check if data was found and return it as JSON
+    if row:
+        # Assuming the data is stored as a JSON string
+        data = row[0]
+        return jsonify(json.loads(data))
+    else:
+        # Return an empty list if no data is found
+        return jsonify([])
+
 @app.route('/get_ticker_data/<interval>/<ticker>', methods=['GET'])
 def get_ticker_data(interval, ticker):
+
     print("This is interval", interval, "This is ticker", ticker)
+    return get_stock_data(ticker, interval)
 
 
-    global time_series_data1
-    global time_series_data2
-    global ticker_list1
-    global ticker_list2
+    # global time_series_data1
+    # global time_series_data2
+    # global ticker_list1
+    # global ticker_list2
 
-    print("This is ticker list 1", ticker_list1)
-    print("This is ticker list 2", ticker_list2)
+    # print("This is ticker list 1", ticker_list1)
+    # print("This is ticker list 2", ticker_list2)
 
 
-    if ticker in ticker_list1:
-        time_series_data = time_series_data1
-    else:
-        time_series_data = time_series_data2
+    # if ticker in ticker_list1:
+    #     time_series_data = time_series_data1
+    # else:
+    #     time_series_data = time_series_data2
 
-    with open("time_series_data.txt", "w") as f:
-        f.write(json.dumps(time_series_data, indent=4))
+    # with open("time_series_data.txt", "w") as f:
+    #     f.write(json.dumps(time_series_data, indent=4))
 
-    # Get the list of data for the given interval
-    interval_data = time_series_data.get(interval, [])
+    # # Get the list of data for the given interval
+    # interval_data = time_series_data.get(interval, [])
  
-    print("This is interval data", len(interval_data))
+    # print("This is interval data", len(interval_data))
 
 
-    # If the interval data is empty, return an empty list
-    if not interval_data:
-        return jsonify([])
+    # # If the interval data is empty, return an empty list
+    # if not interval_data:
+    #     return jsonify([])
     
 
 
-    for stock_data in interval_data:
-        print("This is stock data", stock_data)
-        if ticker == stock_data:
-            return jsonify(interval_data[ticker]['values'])  # Return the data for the specified ticker
+    # for stock_data in interval_data:
+    #     print("This is stock data", stock_data)
+    #     if ticker == stock_data:
+    #         return jsonify(interval_data[ticker]['values'])  # Return the data for the specified ticker
 
-    # If ticker is not found, return an empty list
-    return jsonify([])
+    # # If ticker is not found, return an empty list
+    # return jsonify([])
 
 
 
