@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import pandas as pd
 import json
 import finnhub
@@ -12,6 +12,8 @@ import time
 import schedule
 from flask import jsonify
 import sqlite3
+import alpaca_trade_api as tradeapi
+
 
 
 
@@ -26,6 +28,18 @@ news_cache = {}
 
 app = Flask(__name__)
 CORS(app)
+
+# Alpaca API credentials
+APCA_API_BASE_URL = 'https://paper-api.alpaca.markets'
+APCA_API_KEY_ID = os.environ.get('API_KEY')
+APCA_API_SECRET_KEY = os.environ.get('API_SECRET')
+print("hello", APCA_API_BASE_URL)
+
+# api = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY, APCA_API_BASE_URL, api_version='v2')
+api = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY, APCA_API_BASE_URL)
+
+
+
 
 def create_table():
     conn = sqlite3.connect('stock.db')
@@ -390,6 +404,48 @@ def get_ticker_data(interval, ticker):
 
     # # If ticker is not found, return an empty list
     # return jsonify([])
+
+@app.route('/buy', methods=['POST'])
+def buy_stock():
+    data = request.json
+    ticker = data.get('ticker')
+    qty = data.get('qty')
+    
+    if not ticker or not qty:
+        return jsonify({'error': 'Missing ticker or quantity'}), 400
+
+    try:
+        api.submit_order(
+            symbol=ticker,
+            qty=qty,
+            side='buy',
+            type='market',
+            time_in_force='gtc'
+        )
+        return jsonify({'message': f'Buy order for {qty} shares of {ticker} placed successfully.'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/sell', methods=['POST'])
+def sell_stock():
+    data = request.json
+    ticker = data.get('ticker')
+    qty = data.get('qty')
+    
+    if not ticker or not qty:
+        return jsonify({'error': 'Missing ticker or quantity'}), 400
+
+    try:
+        api.submit_order(
+            symbol=ticker,
+            qty=qty,
+            side='sell',
+            type='market',
+            time_in_force='gtc'
+        )
+        return jsonify({'message': f'Sell order for {qty} shares of {ticker} placed successfully.'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 

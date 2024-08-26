@@ -52,6 +52,25 @@
                 <h3>1 hour interval</h3>
                 <!-- 1-day interval chart -->
             </div>
+            <div class="chart-container p-2 mt-4">
+             
+                    <!-- Existing content -->
+                
+                    <!-- Buy and Sell Controls -->
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-semibold mb-4 text-gray-100">Trade Stocks</h3>
+                        <div class="mb-4">
+                            <input id="trade-ticker" type="text" placeholder="Ticker" class="p-2 text-black rounded-md border border-gray-300">
+                        </div>
+                        <div class="mb-4">
+                            <input id="trade-qty" type="number" placeholder="Quantity" class="p-2 rounded-md border text-black border-gray-300">
+                        </div>
+                        <button id="buy-btn" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Buy</button>
+                        <button id="sell-btn" class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600">Sell</button>
+                    </div>
+    
+                
+            </div>
             <!--
             <div id="chart4" class="chart-container p-2">
                 <h3>1 hour interval</h3>
@@ -145,6 +164,7 @@
         this.candlestickSeries.setData(candlestickData);
     }
     }
+     
 
 
         const chartInstances = {};
@@ -199,6 +219,7 @@
                 chart2.loadDataAndCreateChart(selectedTicker);
                 chart3.loadDataAndCreateChart(selectedTicker);
                 get_news(selectedTicker);
+                changeTickerInput(selectedTicker);
             });
 
             // Initialize Active Stocks table
@@ -224,6 +245,7 @@
                 chart2.loadDataAndCreateChart(selectedTicker);
                 chart3.loadDataAndCreateChart(selectedTicker);
                 get_news(selectedTicker);
+                changeTickerInput(selectedTicker);
             });
         });
 
@@ -260,32 +282,39 @@
 
 
         // chart
-        document.addEventListener('DOMContentLoaded', () => {
-    // Define intervals in milliseconds
-    const intervals = {
-        '1min': 60000,      // 1 minute
-        // '5min': 300000,     // 5 minutes
-        '1h': 3600000,   // 1 hour
-        '1day': 86400000    // 1 day
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+        // Define intervals in milliseconds
+        const intervals = {
+            '1min': 60000,      // 1 minute
+            // '5min': 300000,     // 5 minutes
+            '1h': 3600000,   // 1 hour
+            '1day': 86400000    // 1 day
+        };
 
 
 
-    // Create and load charts for different intervals
-    Object.keys(intervals).forEach(interval => {
+       // Create and load charts for different intervals
+        Object.keys(intervals).forEach(interval => {
 
        
         // chart.loadDataAndCreateChart();
 
-        // Set interval to fetch data every X milliseconds based on the interval
-        setInterval(() => {
-            // Assuming `selectedTicker` is a global variab le or comes from user input
-            console.log("SelectedTicker", selectedTicker);
-            console.log("Ticker", selectedTicker, "Interval", interval, "and calling the loadDataAndCreateChart");
-            chartInstances[interval].loadDataAndCreateChart(selectedTicker);
-        }, intervals[interval]);
+            // Set interval to fetch data every X milliseconds based on the interval
+            setInterval(() => {
+                // Assuming `selectedTicker` is a global variab le or comes from user input
+                console.log("SelectedTicker", selectedTicker);
+                console.log("Ticker", selectedTicker, "Interval", interval, "and calling the loadDataAndCreateChart");
+                chartInstances[interval].loadDataAndCreateChart(selectedTicker);
+            }, intervals[interval]);
+        });
     });
-});
+
+    selectedTickerInput = document.getElementById('trade-ticker');
+    selectedTickerInput.value = selectedTicker;
+
+    function changeTickerInput(selectedTicker) {
+        selectedTickerInput.value = selectedTicker;
+    }
 
 
 
@@ -405,6 +434,56 @@ setInterval(async () => {
   -->
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('buy-btn').addEventListener('click', async function() {
+            const ticker = document.getElementById('trade-ticker').value;
+            const qty = document.getElementById('trade-qty').value;
+
+            if (ticker && qty) {
+                try {
+                    const response = await fetch('/buy', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticker, qty })
+                    });
+                    const result = await response.json();
+                    alert(result.message || result.error);
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            } else {
+                alert('Please enter ticker and quantity.');
+            }
+        });
+
+        document.getElementById('sell-btn').addEventListener('click', async function() {
+            const ticker = document.getElementById('trade-ticker').value;
+            const qty = document.getElementById('trade-qty').value;
+
+            if (ticker && qty) {
+                try {
+                    const response = await fetch('/sell', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticker, qty })
+                    });
+                    const result = await response.json();
+                    alert(result.message || result.error);
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            } else {
+                alert('Please enter ticker and quantity.');
+            }
+        });
+    });
+</script>
+
    
 </script>
 
